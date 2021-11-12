@@ -5,8 +5,18 @@
     <h1>Chat login</h1>
     <p>I'm hosted with GitHub Pages some changes.</p>
     <script>
+
+        Promise.all(urls.map("https://chatty.1337.cx/rooms" => fetch("https://chatty.1337.cx/rooms")))
+            .then(resp => Promise.all(resp.map(r => r.text())))
+            .then(result => {
+               console.log(result)
+            });
+
+
         let rooms = xhttp.open("GET", "https://chatty.1337.cx/rooms", true)
         console.log(rooms)
+
+
     </script>
     <div id="rooms"></div>
 </body>
