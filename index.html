@@ -9,13 +9,24 @@
     <h1>Chat login</h1>
     <p>I'm hosted with GitHub Pages some changes.</p>
     <script>
-        fetch('https://chatty.1337.cx/me/device_code').then(function (response) {
-            return response.json();
-        }).then(function (data) {
-            console.log(data.user_code);
-        }).catch(function () {
-            console.log("Booo");
-        });
+        // user data 
+        user_data =
+
+            fetch('https://chatty.1337.cx/me/device_code').then(function (response) {
+                return response.json();
+            }).then(function (data) {
+                user_data = data
+                console.log('y ' + data.user_code);
+            }).catch(function () {
+                console.log("Booo");
+            });
+
+        console.log('data ' + data)
+        console.log('user_data ' + user_data)
+
+        // user_data.user_code
+        // user_data.verification_uri
+        console.log('x ' + user_data);
     </script>
     <div id="rooms"></div>
 </body>
