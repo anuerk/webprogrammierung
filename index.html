@@ -9,44 +9,13 @@
     <h1>Chat login</h1>
     <p>I'm hosted with GitHub Pages some changes.</p>
     <script>
-        function login() {
-            var user = "anuerk@portolancs.com" //document.getElementById("user_id").value;
-            var pass = "yyy" // document.getElementById("pass_id").value;
-
-            var req = new XMLHttpRequest();
-            req.open("POST", "https://chatty.1337.cx/rooms", true);
-            req.setRequestHeader('Content-Type', 'application/json');
-            req.withCredentials = true;
-            req.onreadystatechange = function () {
-                if (req.readyState == XMLHttpRequest.DONE) {
-                    if (req.status == 200) {
-                        document.getElementById("log_form").style.display = 'none';
-                        document.getElementById("logged_user").style.display = 'block';
-                        document.getElementById("logged_user").textContent = document.getElementById("user_id").value;
-                        document.getElementById("logout_button").style.display = 'block';
-                        hide_error();
-                    }
-                    else if (req.status == 401) {
-                        document.getElementById('error_text').textContent = "User/password is incorrect";
-                        document.getElementById('error').style.display = "";
-                    }
-                }
-            }
-            req.send(JSON.stringify({ username: user, password: pass }));
-        }
-
-
-        Promise.all(urls.map("https://chatty.1337.cx/rooms" => fetch("https://chatty.1337.cx/rooms")))
-            .then(resp => Promise.all(resp.map(r => r.text())))
-            .then(result => {
-                console.log(result)
-            });
-
-
-        let rooms = xhttp.open("GET", "https://chatty.1337.cx/rooms", true)
-        console.log(rooms)
-
-
+        fetch('https://chatty.1337.cx/me/device_code').then(function (response) {
+            return response.json();
+        }).then(function (data) {
+            console.log(data.user_code);
+        }).catch(function () {
+            console.log("Booo");
+        });
     </script>
     <div id="rooms"></div>
 </body>
