@@ -5,7 +5,7 @@ html, body {
     padding: 0;
 }
 
-#wrapper {
+.wrapper {
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -16,11 +16,11 @@ html, body {
     background-color: deepskyblue; 
 }
 
-button#button1 {
+.header button {
     margin: 10px
 }
 
-#mehrspaltig { 
+.container { 
     flex: 1; 
     display: flex; 
     flex-direction: row; 
