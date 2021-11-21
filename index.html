@@ -1,37 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>chatty_foell</title>
+    <link rel="stylesheet" href="app/css/style.css" />
+    
+  </head>
+  <body>
+    
+    <p id="response_text">test zwei</p>
+    <button id="button1" onclick="fetch_auth()">FETCH AUTH</button>
+    <button id="button1" onclick="get_rooms()">GET_ROOMS</button>
 
-<head>
-    Access-Control-Allow-Origin: http://github.com
-</head>
-
-<body>
-    <h1>Chat login</h1>
-    <p>I'm hosted with GitHub Pages some changes.</p>
-    <script>
-        // user data 
-        user_data =
-
-            fetch('https://chatty.1337.cx/me/device_code').then(function (response) {
-                return response.json();
-            }).then(function (data) {
-                user_data = data
-                console.log('y ' + data.user_code);
-            }).catch(function () {
-                console.log("Booo");
-            });
-
-        
-
-        // user_data.user_code
-        // user_data.verification_uri
-        console.log('x ' + user_data);
-
-
-        console.log('data ' + data)
-        console.log('user_data ' + user_data)
-    </script>
-    <div id="rooms"></div>
-</body>
-
+    <script crossorigin src="./js/script.js"></script>
+  </body>
 </html>
