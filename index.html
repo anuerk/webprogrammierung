@@ -1,19 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>chatty_foell</title>
-    <link rel="stylesheet" href="app/css/style.css" />
-    
-  </head>
-  <body>
-    
-    <p id="response_text">test zwei</p>
-    <button id="button1" onclick="fetch_auth()">FETCH AUTH</button>
-    <button id="button1" onclick="get_rooms()">GET_ROOMS</button>
 
-    <script crossorigin src="./js/script.js"></script>
-  </body>
+  <!-- todo
+  - user login anbieten
+  - info wenn screen zu schmal
+  - alles enligsch
+  -->
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chatty_foell</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script type="module" src="js/script.js"></script>
+</head>
+
+<body>
+  <!-- div for the header and functions-->
+  <div id="wrapper">
+    <!-- header -->
+    <div class="header">
+      <button id="button1" onclick="do_auth()">FETCH AUTH</button>
+      <button id="button1" onclick="get_rooms()">GET_ROOMS</button>
+    </div>
+
+    <!-- body-->
+    <div id="mehrspaltig">
+      <!-- rooms-->
+      <div class="rooms">rooms</div>
+      <!-- chat-->
+      <div class="chat">chat</div>
+      <!-- user-->
+      <div class="user">user</div>
+    </div>
+    <!-- footer-->
+    <div class="footer">footer</div>
+  </div>
+</body>
+
 </html>
