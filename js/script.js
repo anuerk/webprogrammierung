@@ -66,7 +66,7 @@ function get_rooms() {
         btn.innerHTML = room
         btn.value = room
         //todo net nur klick
-        btn.addEventListener("click", enter_room)
+        btn.addEventListener("click", enter_room(this.value))
 
         li.appendChild(btn)
         ul.appendChild(li)
