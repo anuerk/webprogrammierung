@@ -57,23 +57,23 @@ function get_rooms() {
       console.log(data)
 
       var ul = document.createElement('ul');
-      ul.setAttribute('id', 'proList');
 
       for (let room of data) {
         console.log('in for')
         let li = document.createElement("li");
 
-        let btn =document.createElement("button")
+        let btn = document.createElement("button")
         btn.innerHTML = room
-        btn.value =room
+        btn.value = room
         //todo net nur klick
         btn.addEventListener("click", enter_room)
 
         li.appendChild(btn)
         ul.appendChild(li)
       }
-
-      document.getElementById('users').append(ul)
+      console.log("ul")
+      console.log(ul)
+      document.getElementById('rooms').append(ul)
       return
     })
     .catch(function (error) {
@@ -90,17 +90,16 @@ function get_users() {
   })
     .then((resp) => resp.json())
     .then(function (data) {
-      console.log('da')
+      console.log('get_users')
       console.log(data)
 
       var ul = document.createElement('ul');
-      ul.setAttribute('id', 'proList');
 
       for (let user of data) {
         console.log('in for')
         let li = document.createElement("li");
         li.innerHTML = user
-        
+
         ul.appendChild(li)
       }
 
@@ -112,7 +111,7 @@ function get_users() {
     });
 }
 
-function enter_room(room){
+function enter_room(room) {
   console.log('enter room')
   console.log(room)
 }
