@@ -95,7 +95,7 @@ function enter_room() {
 
   // todo fetch blabla
   let room = this.value
-  join_room_api_url += '/' + this.value + '/users'
+  join_room_api_url += this.value + '/users'
   console.log(join_room_api_url)
   fetch(join_room_api_url, {
     method: 'POST',
