@@ -76,13 +76,14 @@ function get_users() {
   })
     .then((resp) => resp.json())
     .then(function (data) {
-      console.log('daaaaata')
+      console.log('da')
       console.log(data)
 
       var ul = document.createElement('ul');
       ul.setAttribute('id', 'proList');
 
       for (let user of temp1) {
+        console.log('in for'))
         let li = document.createElement("li");
         li.innerHTML = li.innerHTML + element
         
