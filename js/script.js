@@ -3,6 +3,7 @@ document.cookie = "Session=test; SameSite=None; Secure";
 const auth_api_url = "https://chatty.1337.cx/me/device_code"
 const get_rooms_api_url = "https://chatty.1337.cx/rooms"
 const get_users_api_url = "https://chatty.1337.cx/users"
+let join_room_api_url = "https://chatty.1337.cx/rooms/" //{room_name/users
 
 function do_auth() {
   /*
@@ -91,9 +92,38 @@ function get_users() {
 
 function enter_room() {
   console.log('enter room')
-  console.log(this)
+
   // todo fetch blabla
-  let room = this.value 
+  let room = this.value
+  join_room_api_url += '/' + this.value + '/users'
+  console.log(join_room_api_url)
+  fetch(join_room_api_url, {
+    method: 'POST',
+    credentials: "include",
+  })
+    .then((resp) => resp.json())
+    .then(function (data) {
+      console.log('get_users')
+     /* todo
+  popup info (erstmal) für jeweiligen response header   
+Code	Description	Links
+200	
+You joined the room
+
+No links
+201	
+You created and joined the room
+
+No links
+409	
+You are already in the room
+
+*/
+      return
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
 }
 
 function addElement(id) {
