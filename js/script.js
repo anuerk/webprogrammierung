@@ -48,23 +48,31 @@ function get_rooms() {
 
 function get_rooms() {
 
-  let temp = call_rooms()
-  console.log('temp')
-  console.log(temp)
-
-}
-
-async function call_rooms() {
-
-  const results = await fetch(get_rooms_api_url, {
+  fetch(get_rooms_api_url, {
     credentials: "include",
-    headers: {
-      'Content-Type': 'application/json'
-      // 'Content-Type': 'application/x-www-form-urlencoded',
-    }
   })
+    .then((resp) => resp.json())
+    .then(function (data) {
+      console.log('da')
+      console.log(data)
 
-  return results.json()
+      var ul = document.createElement('ul');
+      ul.setAttribute('id', 'proList');
+
+      for (let user of data) {
+        console.log('in for')
+        let li = document.createElement("li");
+        li.innerHTML = user
+        
+        ul.appendChild(li)
+      }
+
+      document.getElementById('rooms').append(ul)
+      return
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
 
 }
 
