@@ -59,15 +59,21 @@ function get_rooms() {
       var ul = document.createElement('ul');
       ul.setAttribute('id', 'proList');
 
-      for (let user of data) {
+      for (let room of data) {
         console.log('in for')
         let li = document.createElement("li");
-        li.innerHTML = user
-        
+
+        let btn =document.createElement("button")
+        btn.innerHTML = room
+        btn.value =room
+        //todo net nur klick
+        btn.element.addEventListener("click", enter_room(this.value))
+
+        li.appendChild(btn)
         ul.appendChild(li)
       }
 
-      document.getElementById('rooms').append(ul)
+      document.getElementById('users').append(ul)
       return
     })
     .catch(function (error) {
@@ -104,6 +110,11 @@ function get_users() {
     .catch(function (error) {
       console.log(error);
     });
+}
+
+function enter_room(room){
+  console.log('enter room')
+  console.log(room)
 }
 /*function get_users() {
 
