@@ -78,11 +78,18 @@ function get_users() {
     .then(function (data) {
       console.log('daaaaata')
       console.log(data)
-      let rooms = data
 
-      let li = document.createElement("li");
+      var ul = document.createElement('ul');
+      ul.setAttribute('id', 'proList');
 
-      document.getElementById('users').append(li)
+      for (let user of temp1) {
+        let li = document.createElement("li");
+        li.innerHTML = li.innerHTML + element
+        
+        ul.appendChild(li)
+      }
+
+      document.getElementById('users').append(ul)
       return
     })
     .catch(function (error) {
