@@ -23,28 +23,6 @@ function do_auth() {
       console.log(error)
     });
 }
-/*
-function get_rooms() {
-
-
-  fetch(get_rooms_api_url, {
-    credentials: "include",
-  })
-    .then((resp) => resp.json())
-    .then(function (data) {
-      console.log('daaaaata')
-      console.log(data)
-      let rooms = data
-
-      let li = document.createElement("li");
-
-      document.getElementById('rooms').append(li)
-      return
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
-}*/
 
 function get_rooms() {
 
@@ -66,7 +44,7 @@ function get_rooms() {
         btn.innerHTML = room
         btn.value = room
         //todo net nur klick
-        btn.addEventListener("click", enter_room(this))
+        btn.addEventListener("click", enter_room)
 
         li.appendChild(btn)
         ul.appendChild(li)
@@ -111,30 +89,11 @@ function get_users() {
     });
 }
 
-function enter_room(room) {
+function enter_room() {
   console.log('enter room')
-  console.log(room)
+  console.log(this)
+  // todo fetch blabla
 }
-/*function get_users() {
-
-  let temp = call_users()
-  console.log('temp')
-  console.log(temp)
-}
-
-async function call_users() {
-
-  const results = await fetch(get_users_api_url, {
-    credentials: "include",
-    headers: {
-      'Content-Type': 'application/json'
-      // 'Content-Type': 'application/x-www-form-urlencoded',
-    }
-  })
-
-  return results.json()
-
-}*/
 
 function addElement(id) {
   // erstelle ein neues div Element
