@@ -3,7 +3,10 @@ document.cookie = "Session=test; SameSite=None; Secure";
 const auth_api_url = "https://chatty.1337.cx/me/device_code"
 const get_rooms_api_url = "https://chatty.1337.cx/rooms"
 const get_users_api_url = "https://chatty.1337.cx/users"
-let join_room_api_url = "https://chatty.1337.cx/rooms/" //{room_name/users
+const join_room_api_url = "https://chatty.1337.cx/rooms/" //{room_name/users
+
+const label_users = "users"
+const label_rooms = "rooms"
 
 function do_auth() {
   /*
@@ -26,6 +29,7 @@ function do_auth() {
 }
 
 function get_rooms() {
+  document.getElementById('rooms').innerHTML = label_rooms;
 
   fetch(get_rooms_api_url, {
     credentials: "include",
@@ -62,7 +66,7 @@ function get_rooms() {
 }
 
 function get_users() {
-
+  document.getElementById('users').innerHTML = label_users;
 
   fetch(get_users_api_url, {
     credentials: "include",
@@ -95,30 +99,32 @@ function enter_room() {
 
   // todo fetch blabla
   let room = this.value
-  join_room_api_url += this.value + '/users'
-  console.log(join_room_api_url)
-  fetch(join_room_api_url, {
+  let fetch_url = join_room_api_url + room + '/users'
+  console.log(join_room_api_url + room + '/users')
+
+  fetch(fetch_url, {
     method: 'POST',
     credentials: "include",
   })
     .then((resp) => resp.json())
     .then(function (data) {
       console.log('get_users')
-     /* todo
-  popup info (erstmal) für jeweiligen response header   
-Code	Description	Links
-200	
-You joined the room
-
-No links
-201	
-You created and joined the room
-
-No links
-409	
-You are already in the room
-
-*/
+      /* todo
+      - option für neuen raum (über "+" icon neben "rooms")
+   - popup info (erstmal) für jeweiligen response header   
+ Code	Description	Links
+ 200	
+ You joined the room
+ 
+ No links
+ 201	
+ You created and joined the room
+ 
+ No links
+ 409	
+ You are already in the room
+ 
+ */
       return
     })
     .catch(function (error) {
