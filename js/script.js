@@ -85,7 +85,7 @@ function get_users() {
       for (let user of data) {
         console.log('in for')
         let li = document.createElement("li");
-        li.innerHTML = li.innerHTML + element
+        li.innerHTML = user
         
         ul.appendChild(li)
       }
