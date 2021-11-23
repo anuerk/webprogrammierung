@@ -93,6 +93,7 @@ function enter_room() {
   console.log('enter room')
   console.log(this)
   // todo fetch blabla
+  let room = this.value 
 }
 
 function addElement(id) {

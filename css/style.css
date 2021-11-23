@@ -35,6 +35,26 @@ html, body {
     border: 1px solid black
 }
 
+#rooms li {
+    list-style-type: none;
+    padding-top: 5px;
+}
+
+#rooms ul {
+    padding-left: 0;
+}
+
+#rooms button {
+    width: 100%; 
+    background-color:#fff;
+    border:1px solid #000;
+
+}
+
+#rooms button:hover {
+    cursor:pointer;
+}
+
 #chat { 
     flex: 5; 
     padding:5px;
