@@ -18,37 +18,106 @@ function do_auth() {
       return res.json();
     })
     .catch((error) => {
+      console.log('delete cooie')
+      document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       console.log(error)
     });
 }
-
+/*
 function get_rooms() {
+
+
   fetch(get_rooms_api_url, {
     credentials: "include",
   })
-    .then((res) => {
-      console.log(res);
-      add_rooms_to_div(res.json())
-      return res.json();
-    })
-    .catch((error) => {
-      console.log(error)
-    });
+    .then((resp) => resp.json())
+    .then(function (data) {
+      console.log('daaaaata')
+      console.log(data)
+      let rooms = data
 
+      let li = document.createElement("li");
+
+      document.getElementById('rooms').append(li)
+      return
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+}*/
+
+function get_rooms() {
+
+  let temp = call_rooms()
+  console.log('temp')
+  console.log(temp)
+
+}
+
+async function call_rooms() {
+
+  const results = await fetch(get_rooms_api_url, {
+    credentials: "include",
+    headers: {
+      'Content-Type': 'application/json'
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+    }
+  })
+
+  return results.json()
 
 }
 
 function get_users() {
+
+
   fetch(get_users_api_url, {
     credentials: "include",
   })
-    .then((res) => {
-      console.log(res);
-      return res.json();
+    .then((resp) => resp.json())
+    .then(function (data) {
+      console.log('daaaaata')
+      console.log(data)
+      let rooms = data
+
+      let li = document.createElement("li");
+
+      document.getElementById('users').append(li)
+      return
     })
-    .catch((error) => {
-      console.log(error)
+    .catch(function (error) {
+      console.log(error);
     });
+}
+/*function get_users() {
 
+  let temp = call_users()
+  console.log('temp')
+  console.log(temp)
+}
 
+async function call_users() {
+
+  const results = await fetch(get_users_api_url, {
+    credentials: "include",
+    headers: {
+      'Content-Type': 'application/json'
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+    }
+  })
+
+  return results.json()
+
+}*/
+
+function addElement(id) {
+  // erstelle ein neues div Element
+  // und gib ihm etwas Inhalt
+  var newDiv = document.createElement("div");
+  var newContent = document.createTextNode("Hi there and greetings!");
+  newDiv.appendChild(newContent); // füge den Textknoten zum neu erstellten div hinzu.
+
+  // füge das neu erstellte Element und seinen Inhalt ins DOM ein
+  var currentDiv = document.getElementById(id);
+  document.body.insertBefore(newDiv, currentDiv);
 }

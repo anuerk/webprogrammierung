@@ -20,29 +20,29 @@ html, body {
     margin: 10px
 }
 
-.container { 
+#container { 
     flex: 1; 
     display: flex; 
     flex-direction: row; 
 	background-color: silver; 
 }
 
-.rooms { 
+#rooms { 
     flex: 1;
     background-color: darkgray; 
 }
 
-.chat { 
+#chat { 
     flex: 5; 
     background-color: orange; 
 }
 
-.user { 
+#users { 
 	flex: 1;
 	background-color: gray; 
 }
 
-.footer { 
+#footer { 
 	background-color: limegreen; 
 }
 
