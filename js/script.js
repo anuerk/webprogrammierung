@@ -82,7 +82,7 @@ function get_users() {
       var ul = document.createElement('ul');
       ul.setAttribute('id', 'proList');
 
-      for (let user of temp1) {
+      for (let user of data) {
         console.log('in for'))
         let li = document.createElement("li");
         li.innerHTML = li.innerHTML + element
