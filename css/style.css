@@ -5,6 +5,11 @@ html, body {
     padding: 0;
 }
 
+h2 {
+    font-size: 15px;
+    margin-top: 0;
+}
+
 .wrapper {
     display: flex;
     flex-direction: column;
@@ -54,6 +59,10 @@ html, body {
 #rooms button:hover {
     cursor:pointer;
 }
+
+
+
+.add_room { margin-top: auto; }
 
 #chat { 
     flex: 5; 
