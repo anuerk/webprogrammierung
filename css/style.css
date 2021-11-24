@@ -34,6 +34,19 @@ h2 {
     border: 1px solid black
 }
 
+#chat_history{
+    top: 0;
+    height: 82%;
+}
+
+#chat_new label{
+    display:none
+}
+
+#chat_new textarea{
+    width:98%
+}
+
 #rooms { 
     flex: 1;
     padding:5px;

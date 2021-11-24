@@ -1,3 +1,25 @@
+/*
+
+ok GET ​/rooms List all rooms
+GET ​/rooms​/{room}​/users List members in room
+ok POST ​/rooms​/{room}​/users Join room
+PATCH ​/rooms​/{room}​/users Receive new joins and leaves through websocket (wss://...)
+ok DELETE ​/rooms​/{room}​/users Leave the room
+GET ​/rooms​/{room}​/messages List messages in room
+ok POST ​/rooms​/{room}​/messages Send a message to the room
+PATCH ​/rooms​/{room}​/messages Receive new messages through websocket (wss://...)
+
+users
+GET ​/users List all users
+GET ​/users​/{user}​/rooms List rooms the user is in
+POST ​/users​/{user}​/messages Send a message to the user 
+
+me
+GET ​/me​/device_code initiates the GitHub device code authentication flow
+PATCH ​/me​/messages Receive new messages through websocket (wss://...)
+
+*/
+
 document.cookie = "Session=test; SameSite=None; Secure";
 
 const auth_api_url = "https://chatty.1337.cx/me/device_code"
@@ -5,106 +27,109 @@ const get_rooms_api_url = "https://chatty.1337.cx/rooms"
 const get_users_api_url = "https://chatty.1337.cx/users"
 const join_room_api_url = "https://chatty.1337.cx/rooms/" //{room_name/users
 const delete_room_api_url = "https://chatty.1337.cx/rooms/" //{room_name/users
+const send_message_api_url = "https://chatty.1337.cx/rooms/" //{room_name/messages
 
 const label_users = "users"
 const label_rooms = "rooms"
 const label_add = "add"
 
-let current_room = ""
+function init() {
+  get_rooms(false)
+  get_users()
+}
 
 function do_auth() {
   /*
     checks the authentication
   */
-
   fetch(auth_api_url, {
     credentials: "include",
     mode: "cors",
   })
     .then((res) => {
-      console.log(res);
-      return res.json();
+      //todo
+      console.log(res)
+      return res.json()
     })
     .catch((error) => {
       console.log('delete cooie')
-      document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
       console.log(error)
     });
 }
 
 function get_rooms() {
-  document.getElementById('rooms').innerHTML = label_rooms
-  let ul = document.createElement('ul');
+  /*
+  baut gerade den inhalt des kompletten rooms divs auf
+  todo macht zu viel
+  */
+
+  document.getElementById('rooms').innerHTML = '<h2>' + label_rooms + '</h2>'
+  let ul = document.createElement('ul')
 
   fetch(get_rooms_api_url, {
     credentials: "include",
   })
     .then((resp) => resp.json())
     .then(function (data) {
-      console.log('da')
-      console.log(data)
-
       for (let room of data) {
-        console.log('in for')
-        let li = document.createElement("li");
-
+        let li = document.createElement("li")
         let btn = document.createElement("button")
         btn.innerHTML = room
         btn.value = room
+        btn.classList.add(room);
         //todo net nur klick
         btn.addEventListener("click", enter_room)
 
         li.appendChild(btn)
         ul.appendChild(li)
       }
-      console.log("ul")
-      console.log(ul)
-
       return
     })
     .catch(function (error) {
-      console.log(error);
+      console.log(error)
     })
-    .finally(() => {
-      console.log("finally");
-      let li = document.createElement("li");
-      let btn = document.createElement("button")
-      btn.innerHTML = label_add
-      btn.value = label_add
-      //todo net nur klick
-      btn.addEventListener("click", create_room)
-      btn.classList.add("fas", "fa-plus");
 
-      li.appendChild(btn)
-      ul.appendChild(li)
-
-      document.getElementById('rooms').append(ul)
-    });
-  /*.finally(function (error) {
-    
+  let li = document.createElement("li")
+  let btn = document.createElement("button")
+  btn.innerHTML = label_add
+  btn.value = label_add
+  //todo net nur klick
+  btn.addEventListener('click', function (event) {
+    enter_room(true);
   });
+  btn.classList.add("fas", "fa-plus")
 
-<div class="add_room">
-  <i class="">add</i>
-</div>*/
 
+  // todo passt hier nicht hin
+  // create text input to create new room
+  let hr = document.createElement('hr');
+  let input = document.createElement('input');
+  input.setAttribute('type', 'text');
+  input.setAttribute('name', 'new_room');
+  input.setAttribute('id', 'new_room');
+
+
+  li.appendChild(input)
+  li.appendChild(btn)
+  li.appendChild(hr)
+  ul.appendChild(li)
+
+  document.getElementById('rooms').append(ul)
 }
 
 function get_users() {
-  document.getElementById('users').innerHTML = label_users;
+  document.getElementById('users').innerHTML = '<h2>' + label_users + '</h2>'
 
   fetch(get_users_api_url, {
     credentials: "include",
   })
     .then((resp) => resp.json())
     .then(function (data) {
-      console.log('get_users')
-
-      var ul = document.createElement('ul');
+      var ul = document.createElement('ul')
 
       for (let user of data) {
-        console.log('in for')
-        let li = document.createElement("li");
+        let li = document.createElement("li")
         li.innerHTML = user
 
         ul.appendChild(li)
@@ -114,22 +139,29 @@ function get_users() {
       return
     })
     .catch(function (error) {
-      console.log(error);
+      console.log(error)
     });
 }
 
 // wird aufgerufen bei room-button click
-function enter_room() {
-  console.log('enter room')
+function enter_room(create_new_room) {
+  console.log('create_new_room')
+  console.log(create_new_room)
+  let fetch_rooms_url = get_rooms_api_url
+  let enter_fetch_url = ""
+  console.log('URL: ' + fetch_rooms_url)
 
-  // todo fetch blabla
+  // need for difference url room name
   let room = this.value
-  let enter_fetch_url = join_room_api_url + room + '/users'
+  
+  if (create_new_room === true) {
+    enter_fetch_url = join_room_api_url + document.getElementById('new_room').value + '/users'
+  } else {
+    enter_fetch_url = join_room_api_url + room + '/users'
+  }
+  console.log('enter_fetch_url' + enter_fetch_url)
+
   let delete_fetch_url = delete_room_api_url + localStorage.getItem("current_room") + '/users'
-
-
-
-  console.log(delete_fetch_url + room + '/users')
 
   //todo braucht man doch eigentlich kein local storage
   if (localStorage.getItem("current_room") == room) {
@@ -138,103 +170,113 @@ function enter_room() {
   else {
     // leave current room todo evtl. auslafgern als funktion
     console.log('1 raum verlassen')
+    console.log(delete_fetch_url)
     fetch(delete_fetch_url, {
       method: 'delete',
       credentials: "include",
     })
       .then(function (resp) {
-        console.log("left room " + room)
 
-        if (resp.status = 409) {
-          alert("you left the room " + localStorage.getItem("current_room"))
-        } else if (resp.status = 404) {
-          alert("You are not in the room " + room)
+        console.log(resp.status)
+        if (resp.status = 404) {
+          alert("1 You are not in the room " + room)
         }
 
+        else if (resp.status = 200) {
+          alert("1 jaaaa You left  the room " + document.getElementById('new_room').value)
+        }
+
+        // mark the current a tctive room
+        //debugger 'todo
+        //document.getElementsByClassName(room).className = 'active_room'
+
+        console.log('2 raum betreten')
+        console.log(enter_fetch_url)
         // enter new room
         fetch(enter_fetch_url, {
           method: 'POST',
           credentials: "include",
         })
           .then(function (resp) {
-            current_room = "room"
-            localStorage.setItem("current_room", room);
-            console.log("zeile 133")
-            console.log(resp)
-            console.log(resp.status)
+            localStorage.setItem("current_room", room)
 
             if (resp.status = 200) {
-              alert("you joined the room " + room)
-              //todo leave room - sollte bald nicht mehr passieren
+              alert("2 you joined the room " + room)
+
             } else if (resp.status = 201) {
-              alert("You created and joinend in the room " + room)
+              alert("2 You created and joinend in the room " + room)
+
             }
             else if (resp.status = 404) {
-              alert("You are not in the room " + room)
+              alert("2 You are not in the room " + room)
             }
 
             return
           })
           .catch(function (error) {
-            console.log(error);
+            console.log(error)
           });
         return
       })
       .catch(function (error) {
-        console.log(error);
+        console.log(error)
       });
-
-    console.log('2 raum betreten')
-
   }
 }
 
-function create_room() {
-  console.log('create room')
-
-  // todo fetch blabla
-  let room = this.value
-  let fetch_url = join_room_api_url + room + '/users'
-  console.log(join_room_api_url + room + '/users')
-
-  fetch(fetch_url, {
+function send_message_in_room() {
+  console.log('send_message')
+  let send_message_url = delete_room_api_url + localStorage.getItem("current_room") + '/messages'
+  fetch(send_message_url, {
     method: 'POST',
     credentials: "include",
+    headers: {
+      'Content-Type': 'text/plain',
+    },
+    body: document.getElementById('chat_input').value
   })
-    .then((resp) => resp.json())
-    .then(function (data) {
-      console.log('create room ')
-      /* todo
-      - option für neuen raum (über "+" icon neben "rooms")
-   - popup info (erstmal) für jeweiligen response header   
- Code	Description	Links
- 200	
- You joined the room
- 
- No links
- 201	
- You created and joined the room
- 
- No links
- 409	
- You are already in the room
- 
- */
+    .then(function (resp) {
+      if (resp.status = 409) {
+        alert("Message is being broadcast to room " + localStorage.getItem("current_room"))
+      } else if (resp.status = 403) {
+        alert("You are not a member of the room " + room)
+      }
+      document.getElementById('chat_input').value = ''
       return
     })
     .catch(function (error) {
-      console.log(error);
+      console.log(error)
     });
+
 }
 
-function addElement(id) {
-  // erstelle ein neues div Element
-  // und gib ihm etwas Inhalt
-  var newDiv = document.createElement("div");
-  var newContent = document.createTextNode("Hi there and greetings!");
-  newDiv.appendChild(newContent); // füge den Textknoten zum neu erstellten div hinzu.
 
-  // füge das neu erstellte Element und seinen Inhalt ins DOM ein
-  var currentDiv = document.getElementById(id);
-  document.body.insertBefore(newDiv, currentDiv);
+let socket = new WebSocket("wss://chatty.1337.cx/rooms/foo/users");
+
+socket.onmessage = function (event) {
+  console.log(event.data);
 }
+/*
+socket.onopen = function(e) {
+  alert("[open] Connection established");
+  alert("Sending to server");
+  //socket.send("My name is John");
+};
+/*
+socket.onmessage = function(event) {
+  alert(`[message] Data received from server: ${event.data}`);
+};
+
+socket.onclose = function(event) {
+  if (event.wasClean) {
+    alert(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+  } else {
+    // e.g. server process killed or network down
+    // event.code is usually 1006 in this case
+    alert('[close] Connection died');
+  }
+};
+
+socket.onerror = function(error) {
+  alert(`[error] ${error.message}`);
+};*/

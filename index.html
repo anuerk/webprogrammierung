@@ -9,6 +9,14 @@
   - header 
   - file formatierung
   - file für sprache labels
+  - datei codesatz
+  - labels popups
+  - label nachrichten schreiben textarea
+  - lade screen währen fetch
+
+  was hab ich gemacht
+  erstmal protptyp (wie funktioniert was)
+  dann plan, was muss ich alles machen
   -->
 
 <head>
@@ -34,13 +42,20 @@
       <!-- rooms-->
       <div id="rooms">
         <h2>rooms</h2>
-       
-        
+
+
       </div>
       <!-- chat-->
       <div id="chat">
-        <label for="chat_input">chat:</label>
-        <input type="text" id="chat_input">
+        <div id="chat_history">
+
+        </div>
+        <div id="chat_new">
+          <hr>
+          <label for="chat_input">chat:</label>
+          <textarea id="chat_input" name="chat_input" rows="4" cols="50"></textarea><br />
+          <button type="button" id="chat_send" onclick="send_message_in_room()">Send</button>
+        </div>
       </div>
 
       <!-- user-->
@@ -54,5 +69,7 @@
     </div>
   </div>
 </body>
+<!-- todo only if logged in -->
+<script>init()</script>
 
 </html>
