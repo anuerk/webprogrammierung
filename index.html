@@ -30,6 +30,11 @@
 <body>
   <!-- div for the header and functions-->
   <div class="wrapper">
+<!-- will be displayed if user is not logged in-->
+    <div id="overlay"">
+      <div id="text"><br/><button id="logged_in"  onclick="login_hide()">Gemacht :)</button></div>
+    </div>
+
     <!-- header -->
     <div class="header">
       <button onclick="do_auth()">do auth</button>

@@ -34,28 +34,44 @@ const label_rooms = "rooms"
 const label_add = "add"
 
 function init() {
-  get_rooms(false)
-  get_users()
-}
 
-function do_auth() {
-  /*
-    checks the authentication
-  */
   fetch(auth_api_url, {
     credentials: "include",
     mode: "cors",
   })
-    .then((res) => {
-      //todo
-      console.log(res)
-      return res.json()
+    .then(function (resp) {
+      if (resp.status == 401) {
+        console.log("401")
+        return resp.json()
+      }
+      else {
+        console.log("you are in")
+        get_rooms(false)
+        get_users()
+      }
+    })
+    .then((json) => {
+      //todo wird auch aufgerufen, wenn schon angemeldet
+      login_visible(json.verification_uri, json.user_code)
     })
     .catch((error) => {
       console.log('delete cooie')
       document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
       console.log(error)
     });
+}
+
+function login_visible(url, code) {
+  document.getElementById("overlay").style.display = "block"
+
+  var tmpStr = document.getElementById('text').innerHTML
+  document.getElementById("text").innerHTML = "Please login fist <a href='" + url + "' target='blank'>here</a> <br/>" + "with code <br/><b>" + code + "</b>" + tmpStr
+}
+
+function login_hide(url, code) {
+  document.getElementById("overlay").style.display = "none";
+  get_rooms()
+  get_users()
 }
 
 function get_rooms() {
@@ -153,7 +169,7 @@ function enter_room(create_new_room) {
 
   // need for difference url room name
   let room = this.value
-  
+
   if (create_new_room === true) {
     enter_fetch_url = join_room_api_url + document.getElementById('new_room').value + '/users'
   } else {
@@ -251,11 +267,34 @@ function send_message_in_room() {
 }
 
 
-let socket = new WebSocket("wss://chatty.1337.cx/rooms/foo/users");
+/*
+// Create socket
+socket = new WebSocket("wss://chatty.1337.cx/rooms/foo/users");
+socket.binaryType = "blob";
 
-socket.onmessage = function (event) {
-  console.log(event.data);
-}
+// Log socket opening and closing
+socket.addEventListener("open", event => {
+  console.log("Websocket connection opened");
+});
+socket.addEventListener("close", event => {
+  console.log("Websocket connection closed");
+});
+
+// Handle the message
+socket.addEventListener("message", event => {
+  if (event.data instanceof Blob) {
+    reader = new FileReader();
+
+    reader.onload = () => {
+      console.log("Result: " + reader.result);
+    };
+
+    reader.readAsText(event.data);
+  } else {
+    console.log("Result: " + event.data);
+  }
+});*/
+
 /*
 socket.onopen = function(e) {
   alert("[open] Connection established");
