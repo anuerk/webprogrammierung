@@ -28,6 +28,7 @@ const get_users_api_url = "https://chatty.1337.cx/users"
 const join_room_api_url = "https://chatty.1337.cx/rooms/" //{room_name/users
 const delete_room_api_url = "https://chatty.1337.cx/rooms/" //{room_name/users
 const send_message_api_url = "https://chatty.1337.cx/rooms/" //{room_name/messages
+const get_message_for_room_api_url = "https://chatty.1337.cx/rooms/" //{room_name/messages
 
 const label_users = "users"
 const label_rooms = "rooms"
@@ -161,11 +162,8 @@ function get_users() {
 
 // wird aufgerufen bei room-button click
 function enter_room(create_new_room) {
-  console.log('create_new_room')
-  console.log(create_new_room)
   let fetch_rooms_url = get_rooms_api_url
   let enter_fetch_url = ""
-  console.log('URL: ' + fetch_rooms_url)
 
   // need for difference url room name
   let room = this.value
@@ -218,6 +216,8 @@ function enter_room(create_new_room) {
 
             if (resp.status = 200) {
               alert("2 you joined the room " + room)
+              //todo read "old" messages
+              read_old_messages(room)
 
             } else if (resp.status = 201) {
               alert("2 You created and joinend in the room " + room)
@@ -266,11 +266,40 @@ function send_message_in_room() {
 
 }
 
+function read_old_messages(room){
+  document.getElementById('chat_history').innerHTML = ''
+  console.log('muss noch gemacht werden')
 
-/*
+  let fetch_rooms_messages = get_message_for_room_api_url + room + "/messages"
+  let enter_fetch_url = ""
+
+  fetch(fetch_rooms_messages, {
+    credentials: "include",
+  })
+    .then((resp) => resp.json())
+    .then(function (data) {
+      // todo schöner machen
+      var ul = document.createElement('ul')
+
+      for (let message of data) {
+        console.log('message')
+        console.log(message)
+        let li = document.createElement("li")
+        li.innerHTML = message.user + ': ' + message.message
+
+        ul.appendChild(li)
+      }
+
+      document.getElementById('chat_history').append(ul)
+      return
+    })
+    .catch(function (error) {
+      console.log(error)
+    });
+}
+
 // Create socket
 socket = new WebSocket("wss://chatty.1337.cx/rooms/foo/users");
-socket.binaryType = "blob";
 
 // Log socket opening and closing
 socket.addEventListener("open", event => {
@@ -293,7 +322,7 @@ socket.addEventListener("message", event => {
   } else {
     console.log("Result: " + event.data);
   }
-});*/
+})
 
 /*
 socket.onopen = function(e) {
