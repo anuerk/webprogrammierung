@@ -36,27 +36,31 @@ const label_add = "add"
 
 function init() {
 
+  console.log('init')
+
   fetch(auth_api_url, {
     credentials: "include",
     mode: "cors",
   })
     .then(function (resp) {
       if (resp.status == 401) {
-        console.log("401")
         return resp.json()
       }
       else {
-        console.log("you are in")
-        get_rooms(false)
+        get_rooms()
+        enter_room(false, true)
         get_users()
+        //private_message_listen()
       }
     })
     .then((json) => {
       //todo wird auch aufgerufen, wenn schon angemeldet
-      login_visible(json.verification_uri, json.user_code)
+      if (isJson(json)) {
+        login_visible(json.verification_uri, json.user_code)
+      }
     })
     .catch((error) => {
-      console.log('delete cooie')
+      //todo console.log('delete cooie')
       document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
       console.log(error)
     });
@@ -65,7 +69,7 @@ function init() {
 function login_visible(url, code) {
   document.getElementById("overlay").style.display = "block"
 
-  var tmpStr = document.getElementById('text').innerHTML
+  let tmpStr = document.getElementById('text').innerHTML
   document.getElementById("text").innerHTML = "Please login fist <a href='" + url + "' target='blank'>here</a> <br/>" + "with code <br/><b>" + code + "</b>" + tmpStr
 }
 
@@ -143,7 +147,7 @@ function get_users() {
   })
     .then((resp) => resp.json())
     .then(function (data) {
-      var ul = document.createElement('ul')
+      let ul = document.createElement('ul')
 
       for (let user of data) {
         let li = document.createElement("li")
@@ -161,12 +165,20 @@ function get_users() {
 }
 
 // wird aufgerufen bei room-button click
-function enter_room(create_new_room) {
+function enter_room(create_new_room, init_call) {
+  console.log('enter_room')
   let fetch_rooms_url = get_rooms_api_url
   let enter_fetch_url = ""
+  let room = ""
 
-  // need for difference url room name
-  let room = this.value
+  if (init_call == true) {
+    console.log('set localstorage wert als room')
+    room = localStorage.getItem('current_room')
+  } else {
+    // need for difference url room name
+    console.log('set this.value wert als room')
+    room = this.value
+  }
 
   if (create_new_room === true) {
     enter_fetch_url = join_room_api_url + document.getElementById('new_room').value + '/users'
@@ -178,34 +190,20 @@ function enter_room(create_new_room) {
   let delete_fetch_url = delete_room_api_url + localStorage.getItem("current_room") + '/users'
 
   //todo braucht man doch eigentlich kein local storage
-  if (localStorage.getItem("current_room") == room) {
-    alert("You are already in the room " + room)
+  if (localStorage.getItem("current_room") == room && init_call == false) {
+    console.log("You are already in the room " + room)
+  }
+  else if (init_call == true) {
+    read_old_messages(room)
   }
   else {
     // leave current room todo evtl. auslafgern als funktion
-    console.log('1 raum verlassen')
-    console.log(delete_fetch_url)
     fetch(delete_fetch_url, {
       method: 'delete',
       credentials: "include",
     })
       .then(function (resp) {
 
-        console.log(resp.status)
-        if (resp.status = 404) {
-          alert("1 You are not in the room " + room)
-        }
-
-        else if (resp.status = 200) {
-          alert("1 jaaaa You left  the room " + document.getElementById('new_room').value)
-        }
-
-        // mark the current a tctive room
-        //debugger 'todo
-        //document.getElementsByClassName(room).className = 'active_room'
-
-        console.log('2 raum betreten')
-        console.log(enter_fetch_url)
         // enter new room
         fetch(enter_fetch_url, {
           method: 'POST',
@@ -215,16 +213,17 @@ function enter_room(create_new_room) {
             localStorage.setItem("current_room", room)
 
             if (resp.status = 200) {
-              alert("2 you joined the room " + room)
-              //todo read "old" messages
+              //2 you joined the room " + room
               read_old_messages(room)
 
             } else if (resp.status = 201) {
-              alert("2 You created and joinend in the room " + room)
+              // todo              
+              console.log("todo 2 You created and joinend in the room " + room)
 
             }
             else if (resp.status = 404) {
-              alert("2 You are not in the room " + room)
+              // todo?
+              console.log("todo 2 You are not in the room " + room)
             }
 
             return
@@ -266,7 +265,7 @@ function send_message_in_room() {
 
 }
 
-function read_old_messages(room){
+function read_old_messages(room) {
   document.getElementById('chat_history').innerHTML = ''
   console.log('muss noch gemacht werden')
 
@@ -279,7 +278,7 @@ function read_old_messages(room){
     .then((resp) => resp.json())
     .then(function (data) {
       // todo schöner machen
-      var ul = document.createElement('ul')
+      let ul = document.createElement('ul')
 
       for (let message of data) {
         console.log('message')
@@ -298,53 +297,28 @@ function read_old_messages(room){
     });
 }
 
-// Create socket
-socket = new WebSocket("wss://chatty.1337.cx/rooms/foo/users");
+//function private_message_listen() {
+console.log('private_message_listen')
+// Let us open a web socket
+const ws = new WebSocket("wss://chatty.1337.cx/me/messages")
 
-// Log socket opening and closing
-socket.addEventListener("open", event => {
-  console.log("Websocket connection opened");
-});
-socket.addEventListener("close", event => {
-  console.log("Websocket connection closed");
-});
+ws.onmessage = function (e) {
+  var server_message = e.data
+  alert('wss reponse :) ' + server_message)
+  return false
+}
 
-// Handle the message
-socket.addEventListener("message", event => {
-  if (event.data instanceof Blob) {
-    reader = new FileReader();
+console.log('ws')
+console.log(ws)
+console.log(ws.readyState)
 
-    reader.onload = () => {
-      console.log("Result: " + reader.result);
-    };
 
-    reader.readAsText(event.data);
-  } else {
-    console.log("Result: " + event.data);
+// helper functions
+function isJson(str) {
+  try {
+    JSON.parse(str)
+  } catch (e) {
+    return false
   }
-})
-
-/*
-socket.onopen = function(e) {
-  alert("[open] Connection established");
-  alert("Sending to server");
-  //socket.send("My name is John");
-};
-/*
-socket.onmessage = function(event) {
-  alert(`[message] Data received from server: ${event.data}`);
-};
-
-socket.onclose = function(event) {
-  if (event.wasClean) {
-    alert(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
-  } else {
-    // e.g. server process killed or network down
-    // event.code is usually 1006 in this case
-    alert('[close] Connection died');
-  }
-};
-
-socket.onerror = function(error) {
-  alert(`[error] ${error.message}`);
-};*/
+  return true
+}
