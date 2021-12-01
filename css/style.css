@@ -49,6 +49,10 @@ h3{
     font-weight: bold;
 }
 
+#menu{
+    border: 1px solid black;
+}
+
 .header { 
     padding:5px;
     border: 1px solid black
@@ -92,22 +96,23 @@ h3{
     width:98%
 }
 
-#rooms { 
+/* style for the left menu*/
+#rooms {
     flex: 1;
     padding:5px;
-    border: 1px solid black
+    /* border: 1px solid black */
 }
 
-#rooms li {
+#rooms li, #users li {
     list-style-type: none;
     padding-top: 5px;
 }
 
-#rooms ul {
+#rooms ul, #users ul  {
     padding-left: 0;
 }
 
-#rooms button {
+#rooms button, #users button {
     width: 100%; 
     background-color:#fff;
     border:1px solid #000;
@@ -118,10 +123,11 @@ h3{
     cursor:pointer;
 }
 
+.add_room { 
+    margin-top: auto; 
+}
 
-
-.add_room { margin-top: auto; }
-
+/* style for the chat window*/
 #chat {
     flex: 5;
     /* text-align: center; */
@@ -131,10 +137,10 @@ h3{
     /* border: 1px solid black */
 }
 
-#users { 
+#users {
 	flex: 1;
 	padding:5px;
-    border: 1px solid black
+	border-top: 1px solid black;
 }
 
 #footer { 

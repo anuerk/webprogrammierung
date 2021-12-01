@@ -48,7 +48,7 @@ function init() {
       }
       else {
         get_rooms()
-        enter_room(false, true)
+        enter_chat(false, true)
         get_users()
         //private_message_listen()
       }
@@ -100,7 +100,7 @@ function get_rooms() {
         btn.value = room
         btn.classList.add(room);
         //todo net nur klick
-        btn.addEventListener("click", enter_room)
+        btn.addEventListener("click", enter_chat)
 
         li.appendChild(btn)
         ul.appendChild(li)
@@ -117,7 +117,7 @@ function get_rooms() {
   btn.value = label_add
   //todo net nur klick
   btn.addEventListener('click', function (event) {
-    enter_room(true);
+    enter_chat(true);
   });
   btn.classList.add("fas", "fa-plus")
 
@@ -151,8 +151,14 @@ function get_users() {
 
       for (let user of data) {
         let li = document.createElement("li")
-        li.innerHTML = user
+        let btn = document.createElement("button")
+        btn.innerHTML = user
+        btn.value = user
+        btn.classList.add(user);
+        //todo net nur klick
+        btn.addEventListener("click", enter_chat)
 
+        li.appendChild(btn)
         ul.appendChild(li)
       }
 
@@ -162,11 +168,14 @@ function get_users() {
     .catch(function (error) {
       console.log(error)
     });
+
+    
 }
 
 // wird aufgerufen bei room-button click
-function enter_room(create_new_room, init_call) {
-  console.log('enter_room')
+function enter_chat(create_new_room, init_call) {
+  console.log('enter_chat')
+  // todo -> wenn auf user geklickt wurde
   let fetch_rooms_url = get_rooms_api_url
   let enter_fetch_url = ""
   let room = ""
