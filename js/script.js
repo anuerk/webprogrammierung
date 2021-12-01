@@ -195,6 +195,9 @@ function enter_room(create_new_room, init_call) {
   }
   else if (init_call == true) {
     read_old_messages(room)
+    // update header for current room
+    let tmp = document.getElementById('chat_history').innerHTML
+    document.getElementById('chat_history').innerHTML = '<h3>' + room + '</h3>' + tmp
   }
   else {
     // leave current room todo evtl. auslafgern als funktion
@@ -226,6 +229,10 @@ function enter_room(create_new_room, init_call) {
               console.log("todo 2 You are not in the room " + room)
             }
 
+            // update header for current room
+            let tmp = document.getElementById('chat_history').innerHTML
+            document.getElementById('chat_history').innerHTML = '<h3>' + room + '</h3>' + tmp
+
             return
           })
           .catch(function (error) {
@@ -235,7 +242,7 @@ function enter_room(create_new_room, init_call) {
       })
       .catch(function (error) {
         console.log(error)
-      });
+      })
   }
 }
 
