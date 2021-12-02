@@ -43,10 +43,13 @@ function init() {
     mode: "cors",
   })
     .then(function (resp) {
+      console.log('1')
       if (resp.status == 401) {
+        console.log('1 if')
         return resp.json()
       }
       else {
+        console.log('1 else')
         get_rooms()
         enter_chat(false, true)
         get_users()
@@ -55,9 +58,12 @@ function init() {
     })
     .then((json) => {
       //todo wird auch aufgerufen, wenn schon angemeldet
-      if (isJson(json)) {
+      console.log('2')
+
+      //if (isJson(json)) {
+        console.log('in if')
         login_visible(json.verification_uri, json.user_code)
-      }
+      //}
     })
     .catch((error) => {
       //todo console.log('delete cooie')
@@ -67,6 +73,7 @@ function init() {
 }
 
 function login_visible(url, code) {
+  console.log('jap')
   document.getElementById("overlay").style.display = "block"
 
   let tmpStr = document.getElementById('text').innerHTML

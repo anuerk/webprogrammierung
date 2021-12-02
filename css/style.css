@@ -127,6 +127,12 @@ h3{
     margin-top: auto; 
 }
 
+#users {
+	flex: 1;
+	padding:5px;
+	border-top: 1px solid black;
+}
+
 /* style for the chat window*/
 #chat {
     flex: 5;
@@ -137,11 +143,16 @@ h3{
     /* border: 1px solid black */
 }
 
-#users {
-	flex: 1;
-	padding:5px;
-	border-top: 1px solid black;
+#chat_history li {
+    border: 1px solid black;
+    margin: 3px;
+    padding: 3px;
+    list-style-type: none;
+    border-radius: 4px;
+    background-color: lightgrey;
 }
+
+
 
 #footer { 
 	padding:5px;

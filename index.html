@@ -17,6 +17,9 @@
   - current user in rooms
   - hatte fehler, als bei erstem aufruf leere arrays zurück kamen. evtl mal fest setzten und dann testen -
   - - > vermutlich wird room name auf undefined gesetzt und dieser raum dann beim erstellen angelegt
+  - - > evtl noch bug, wenn zuerset 401 nicht angemeldet kommt 
+- wie aktuellen user ermitteln?
+- f5 ruhiger macher (menu flakkert)
 
   was hab ich gemacht
   erstmal protptyp (wie funktioniert was)
@@ -35,8 +38,8 @@
   <!-- div for the header and functions-->
   <div class="wrapper">
     <!-- will be displayed if user is not logged in-->
-    <div id="overlay"">
-      <div id=" text"><br /><button id="logged_in" onclick="login_hide()">Gemacht :)</button></div>
+    <div id="overlay">
+      <div id="text"><br /><button id="logged_in" onclick="login_hide()">Gemacht :)</button></div>
   </div>
 
   <!-- header -->
