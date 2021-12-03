@@ -71,8 +71,11 @@ h3{
 }
 
 #chat_history{
+    height: 500px;
+    height: calc(100% - 703px);
     /* top: 0; */
-    /* height: 78%; */
+    overflow: auto;
+    height: 78%;
     /* text-align: center; */
     /* position: relative; */
     /* left: 100px; */
@@ -149,6 +152,7 @@ h3{
     padding: 3px;
     list-style-type: none;
     border-radius: 4px;
+    color: black;
     background-color: lightgrey;
 }
 

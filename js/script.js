@@ -43,27 +43,20 @@ function init() {
     mode: "cors",
   })
     .then(function (resp) {
-      console.log('1')
       if (resp.status == 401) {
-        console.log('1 if')
         return resp.json()
       }
       else {
-        console.log('1 else')
         get_rooms()
         enter_chat(false, true)
         get_users()
-        //private_message_listen()
+        return resp.json()
       }
     })
     .then((json) => {
-      //todo wird auch aufgerufen, wenn schon angemeldet
-      console.log('2')
-
-      //if (isJson(json)) {
-        console.log('in if')
+      if (json.hasOwnProperty('verification_uri')) {
         login_visible(json.verification_uri, json.user_code)
-      //}
+      }
     })
     .catch((error) => {
       //todo console.log('delete cooie')
@@ -73,7 +66,6 @@ function init() {
 }
 
 function login_visible(url, code) {
-  console.log('jap')
   document.getElementById("overlay").style.display = "block"
 
   let tmpStr = document.getElementById('text').innerHTML
@@ -176,23 +168,20 @@ function get_users() {
       console.log(error)
     });
 
-    
+
 }
 
 // wird aufgerufen bei room-button click
 function enter_chat(create_new_room, init_call) {
-  console.log('enter_chat')
   // todo -> wenn auf user geklickt wurde
   let fetch_rooms_url = get_rooms_api_url
   let enter_fetch_url = ""
   let room = ""
 
   if (init_call == true) {
-    console.log('set localstorage wert als room')
     room = localStorage.getItem('current_room')
   } else {
     // need for difference url room name
-    console.log('set this.value wert als room')
     room = this.value
   }
 
@@ -201,15 +190,14 @@ function enter_chat(create_new_room, init_call) {
   } else {
     enter_fetch_url = join_room_api_url + room + '/users'
   }
-  console.log('enter_fetch_url' + enter_fetch_url)
 
   let delete_fetch_url = delete_room_api_url + localStorage.getItem("current_room") + '/users'
 
   //todo braucht man doch eigentlich kein local storage
-  if (localStorage.getItem("current_room") == room && init_call == false) {
+  if (localStorage.getItem("current_room") == room && init_call === false) {
     console.log("You are already in the room " + room)
   }
-  else if (init_call == true) {
+  else if (init_call === true) {
     read_old_messages(room)
     // update header for current room
     let tmp = document.getElementById('chat_history').innerHTML
@@ -263,7 +251,6 @@ function enter_chat(create_new_room, init_call) {
 }
 
 function send_message_in_room() {
-  console.log('send_message')
   let send_message_url = delete_room_api_url + localStorage.getItem("current_room") + '/messages'
   fetch(send_message_url, {
     method: 'POST',
@@ -290,7 +277,6 @@ function send_message_in_room() {
 
 function read_old_messages(room) {
   document.getElementById('chat_history').innerHTML = ''
-  console.log('muss noch gemacht werden')
 
   let fetch_rooms_messages = get_message_for_room_api_url + room + "/messages"
   let enter_fetch_url = ""
@@ -300,15 +286,11 @@ function read_old_messages(room) {
   })
     .then((resp) => resp.json())
     .then(function (data) {
-      // todo schöner machen
       let ul = document.createElement('ul')
 
-      for (let message of data) {
-        console.log('message')
-        console.log(message)
+      for (let item in data) {
         let li = document.createElement("li")
-        li.innerHTML = message.user + ': ' + message.message
-
+        li.innerHTML = data[item].user + ': ' + data[item].message
         ul.appendChild(li)
       }
 
@@ -320,8 +302,7 @@ function read_old_messages(room) {
     });
 }
 
-//function private_message_listen() {
-console.log('private_message_listen')
+
 // Let us open a web socket
 const ws = new WebSocket("wss://chatty.1337.cx/me/messages")
 
@@ -330,11 +311,6 @@ ws.onmessage = function (e) {
   alert('wss reponse :) ' + server_message)
   return false
 }
-
-console.log('ws')
-console.log(ws)
-console.log(ws.readyState)
-
 
 // helper functions
 function isJson(str) {
