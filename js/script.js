@@ -201,8 +201,7 @@ function enter_chat(create_new_room, init_call) {
     read_old_messages(room)
     // update header for current room
     let tmp = document.getElementById('chat_history').innerHTML
-    document.getElementById('chat_history').innerHTML = '<h3>' + room + '</h3>' + tmp
-  }
+ }
   else {
     // leave current room todo evtl. auslafgern als funktion
     fetch(delete_fetch_url, {
@@ -235,8 +234,7 @@ function enter_chat(create_new_room, init_call) {
 
             // update header for current room
             let tmp = document.getElementById('chat_history').innerHTML
-            document.getElementById('chat_history').innerHTML = '<h3>' + room + '</h3>' + tmp
-
+        
             return
           })
           .catch(function (error) {
@@ -263,6 +261,7 @@ function send_message_in_room() {
     .then(function (resp) {
       if (resp.status = 409) {
         alert("Message is being broadcast to room " + localStorage.getItem("current_room"))
+        read_old_messages(localStorage.getItem("current_room"))
       } else if (resp.status = 403) {
         alert("You are not a member of the room " + room)
       }
@@ -276,7 +275,7 @@ function send_message_in_room() {
 }
 
 function read_old_messages(room) {
-  document.getElementById('chat_history').innerHTML = ''
+  document.getElementById('chat_history').innerHTML = '<h3>' + room + '</h3>'
 
   let fetch_rooms_messages = get_message_for_room_api_url + room + "/messages"
   let enter_fetch_url = ""
