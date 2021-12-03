@@ -194,6 +194,11 @@ function enter_chat(create_new_room, init_call) {
   let delete_fetch_url = delete_room_api_url + localStorage.getItem("current_room") + '/users'
 
   //todo braucht man doch eigentlich kein local storage
+  console.log(' if condigtion')
+  console.log(localStorage.getItem("current_room"))
+  console.log(room)
+  console.log(localStorage.getItem("current_room") == room)
+  console.log(init_call)
   if (localStorage.getItem("current_room") == room && init_call === false) {
     console.log("You are already in the room " + room)
   }
