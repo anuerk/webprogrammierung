@@ -9,7 +9,6 @@
   - file formatierung
   - file für sprache labels
   - datei codesatz
-  - labels popups
   - label nachrichten schreiben textarea
   - lade screen währen fetch
   - hatte fehler, als bei erstem aufruf leere arrays zurück kamen. evtl mal fest setzten und dann testen -
@@ -18,11 +17,10 @@
   - f5 ruhiger macher (menu flakkert)
   - if condition wenn schon im raum
 - ' und "
-- textarea leeren, nach absenden
 - sich selber eine nachricht schicken ist auch schwachsinn ;)
-- wss leave room für alten beenden
 - evtl. messages von usern als json in lokaler db speichern (mit info - nachrichten werden für die dauer der session gespeichert)
 -- css änderung, wenn neue nachricht von user kommt (neben usernamen) 
+- wss repsonse einbauen
 
 
 
@@ -37,6 +35,17 @@
   - gründe für: 
       1. device flow user wird nicht zurück gegeben (änderung an api)
       2. logged in ist redundant, da ja header entsprechend zurückgegeben wird
+  - request bei raumwechsel:
+          von adsdad
+          1. 204 ???
+          2. post in neuen raum
+          3. hole user in raum
+          4. starte alten websocket
+          5. verlasse alten raum
+          6. lese nachrichten im raum
+          7. starte message websocket
+          8. starte info websocket
+          nach anuerk
 
 -->
 

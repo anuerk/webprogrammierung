@@ -1,20 +1,35 @@
 /*
-here happens the logic for the chat client
+
+ok GET ​/rooms List all rooms
+GET ​/rooms​/{room}​/users List members in room
+ok POST ​/rooms​/{room}​/users Join room
+PATCH ​/rooms​/{room}​/users Receive new joins and leaves through websocket (wss://...)
+ok DELETE ​/rooms​/{room}​/users Leave the room
+GET ​/rooms​/{room}​/messages List messages in room
+ok POST ​/rooms​/{room}​/messages Send a message to the room
+PATCH ​/rooms​/{room}​/messages Receive new messages through websocket (wss://...)
+
+users
+GET ​/users List all users
+GET ​/users​/{user}​/rooms List rooms the user is in
+POST ​/users​/{user}​/messages Send a message to the user 
+
+me
+GET ​/me​/device_code initiates the GitHub device code authentication flow
+PATCH ​/me​/messages Receive new messages through websocket (wss://...)
+
 */
 const auth_api_url = "https://chatty.1337.cx/me/device_code"
 const get_rooms_api_url = "https://chatty.1337.cx/rooms"
 const get_users_api_url = "https://chatty.1337.cx/users"
-const revieve_user_in_room_api_url = "https://chatty.1337.cx/rooms/" //{room_name}/users
-const join_room_api_url = "https://chatty.1337.cx/rooms/" //{room_name}/users
+const join_room_api_url = "https://chatty.1337.cx/rooms/" //{room_name/users
 const delete_room_api_url = "https://chatty.1337.cx/rooms/" //{room_name/users
 const send_message_api_url = "https://chatty.1337.cx/rooms/" //{room_name/messages
 const send_message_user_api_url = "https://chatty.1337.cx/users/" //{name}/messages
 const get_message_for_room_api_url = "https://chatty.1337.cx/rooms/" //{room_name/messages
 const leave_room_api_url = "https://chatty.1337.cx/users/" //{user}/rooms
-const socket_room_message_api_url = "wss://chatty.1337.cx/rooms/" //{room_name/messages
-const socket_room_joins_api_url = "wss://chatty.1337.cx/rooms/" //{user}/rooms
 
-//labels todo auslagern
+//labels
 const label_users = "users"
 const label_rooms = "rooms"
 const label_add = "add"
@@ -22,10 +37,8 @@ const label_need_message = "you can not send an empty message"
 const label_user_offline = "user seems to be unavailable"
 const label_message_sent = "message sent"
 
-var current_user = ""
+var current_user = "" //todo or let?
 var current_room = ""
-var current_room_join_websocket //= new WebSocket()
-var current_room_message_websocket //= new WebSocket()
 
 function init() {
 
@@ -36,14 +49,14 @@ function init() {
     mode: "cors",
   })
     .then(function (resp) {
-      //if (resp.status == 401)
+      //if (resp.status == 401) {
       return resp.json()
     })
     .then((json) => {
       if (json.hasOwnProperty("verification_uri")) {
         login_visible(json.verification_uri, json.user_code)
       } else {
-        // user is logged in - clean up first :)
+        console.log("log in success result: ")
         current_user = json.user
 
         leave_all_rooms()
@@ -177,15 +190,16 @@ function create_user_html(user) {
 
 // wird aufgerufen bei room-button click
 function enter_chat(create_new_room) {
-  // update header
   document.getElementById('chat_send').onclick = function () { send_message_in_room(); }
-
-  // initialize variables
+  // todo -> wenn auf user geklickt wurde
+  let fetch_rooms_url = get_rooms_api_url
   let enter_fetch_url = ""
   let room = ""
 
   // need for difference url room name
   room = this.value
+
+
 
   //todo bug wenn in rraum wechsel hin und her und wieder zurück --> 409 confilct. muss raum zuerst verlassen!
   console.log('current_room: ' + current_room)
@@ -196,15 +210,15 @@ function enter_chat(create_new_room) {
     enter_fetch_url = join_room_api_url + room + '/users'
   }
 
-  if (current_room == room) {
+  let delete_fetch_url = delete_room_api_url + current_room + '/users'
+
+  if (current_room == room) {//&& init_call === false) {
     console.log("You are already in the room " + room)
     read_old_messages(room)
+    // update header for current room
+    let tmp = document.getElementById('chat_history').innerHTML
   }
   else {
-    if (current_room != "") {
-      leave_room(current_room)
-    }
-
     // enter new room
     fetch(enter_fetch_url, {
       method: 'POST',
@@ -214,70 +228,47 @@ function enter_chat(create_new_room) {
         current_room = room
 
         if (resp.status = 200) {
-          // you joined the room 
+          //2 you joined the room " + room
           read_old_messages(room)
-          if (current_room_join_websocket !== undefined && current_room_join_websocket.readyState === 3) {
-            current_room_join_websocket.close()
-            current_room_message_websocket.close()
-          }
-          current_room_join_websocket = start_room_message_sockets(room)
-          current_room_message_websocket = start_room_join_sockets(room)
 
         } else if (resp.status = 201) {
-          // you created and joined the room 
-          if (current_room_join_websocket !== undefined && current_room_join_websocket.readyState === 3) {
-            current_room_join_websocket.close()
-            current_room_message_websocket.close()
-          }
-          current_room_join_websocket = start_room_message_sockets(room)
-          current_room_message_websocket = start_room_join_sockets(room)
+          // todo              
+          console.log("todo 2 You created and joinend in the room " + room)
 
         }
         else if (resp.status = 404) {
-          console.log("passiert doch net, oder? todo 2 You are not in the room " + room)
+          // todo?
+          console.log("todo 2 You are not in the room " + room)
         }
+
+        // update header for current room
+        let tmp = document.getElementById('chat_history').innerHTML
 
         return
       })
       .catch(function (error) {
         console.log(error)
       });
-
-    // list users in room
-    get_user_in_rooms(room)
-
   }
+  //todo start wss listener
 }
 
-function get_user_in_rooms(room_name) {
-  console.log('get_user_in_rooms')
-
-  fetch(revieve_user_in_room_api_url + room_name + '/users', {
-    credentials: "include",
-  })
-    .then((resp) => resp.json())
-    .then(function (data) {
-      format_users_in_room_html(room_name, data)
-      return
-    })
-    .catch(function (error) {
-      console.log(error)
-    });
-}
-
-function format_users_in_room_html(room_name, user_data) {
-  console.log('format_users_in_room_html')
-  let ul = document.createElement('ul')
-  let room_list_item = document.getElementById("rooms").getElementsByClassName(room_name)[0];
-
-  for (let user of user_data) {
-    let li = document.createElement('li')
-
-    li.setAttribute('class', 'todo')
-    li.innerHTML = user
-    ul.append(li)
+function start_room_message_socket(room, action) {
+  // todo
+  let ws = new WebSocket("wss://chatty.1337.cx/me/messages")
+  if (action == 'start') {
+    ws.onmessage = function (e) {
+      var server_message = e.data
+      //todo
+      alert('wss reponse: ' + server_message)
+      return false
+    }
+  } else {
+    // todo end old wss
   }
-  room_list_item.after(ul)
+
+
+
 }
 
 function send_message_in_room() {
@@ -297,7 +288,6 @@ function send_message_in_room() {
       .then(function (resp) {
         if (resp.status = 409) {
           // message sent
-          document.getElementById('chat_input').value = ""
           read_old_messages(current_room)
         } else if (resp.status = 403) {
           alert("You are not a member of the room " + room)
@@ -386,8 +376,7 @@ function send_message_to_user(user) {
       .then(function (resp) {
         if (resp.status = 404) {
           alert(label_user_offline)
-        } else if (resp.status = 200) {
-          document.getElementById('chat_input').value = ""
+        } else {
           alert(label_message_sent)
         }
 
@@ -406,6 +395,10 @@ function leave_all_rooms() {
   })
     .then((resp) => resp.json())
     .then(function (data) {
+
+      console.log('data')
+      console.log(data)
+      // user is only allowed to be in one room
       for (let key in data) {
         if (data.hasOwnProperty(key)) {
           leave_room(data[key])
@@ -416,10 +409,12 @@ function leave_all_rooms() {
     .catch(function (error) {
       console.log(error)
     });
+
 }
 
-function leave_room(room_name) {
-  let delete_fetch_url = delete_room_api_url + room_name + '/users'
+function leave_room(rooom) {
+
+  let delete_fetch_url = delete_room_api_url + rooom + '/users'
 
   fetch(delete_fetch_url, {
     method: 'delete',
@@ -428,56 +423,4 @@ function leave_room(room_name) {
     .catch(function (error) {
       console.log(error)
     })
-
-  end_room_sockets(room_name)
-
-  // remove old user in room list
-  //todo nicht bei neuladen
-  document.getElementById("rooms").getElementsByClassName(room_name)[0].nextSibling.innerHTML = ""
-}
-
-function start_room_message_sockets(room_name) {
-
-  //Receive new messages
-  let socket_room_messages = new WebSocket(socket_room_message_api_url + room_name + "/messages")
-  console.log('socket_room_messages')
-  console.log(socket_room_messages)
-
-  socket_room_messages.onmessage = function (e) {
-    var server_message = e.data
-    //todo
-    alert('wss reponse: ' + server_message)
-    return false
-  }
-
-  return socket_room_messages
-
-}
-
-function start_room_join_sockets(room_name) {
-
-  //Receive new joins and leaves 
-  let socket_room_joins = new WebSocket(socket_room_joins_api_url + room_name + "/users")
-  console.log('socket_room_joins')
-  console.log(socket_room_joins)
-  socket_room_joins.onmessage = function (e) {
-    var server_message = e.data
-    //todo
-    alert('wss reponse: ' + server_message)
-    return false
-  }
-
-  return socket_room_joins
-}
-
-function end_room_sockets(room_name) {
-  //Receive new messages
-  let socket_room_messages = new WebSocket(socket_room_message_api_url + room_name + "/messages")
-
-  socket_room_messages.onmessage = function (e) {
-    var server_message = e.data
-    //todo
-    alert('wss reponse ' + room_name + ' : ' + server_message)
-    return false
-  }
 }
