@@ -15,22 +15,29 @@
   - hatte fehler, als bei erstem aufruf leere arrays zurück kamen. evtl mal fest setzten und dann testen -
   - - > vermutlich wird room name auf undefined gesetzt und dieser raum dann beim erstellen angelegt
   - - > evtl noch bug, wenn zuerset 401 nicht angemeldet kommt 
-- wie aktuellen user ermitteln?
-- f5 ruhiger macher (menu flakkert)
-
-  was hab ich gemacht
-  erstmal protptyp (wie funktioniert was)
-  dann plan, was muss ich alles machen
-gründe für: 
-1. device flow user wird nicht zurück gegeben (änderung an api)
-2. logged in ist redundant, da ja header entsprechend zurückgegeben wird
-
-
-- if condition wenn schon im raum
+  - f5 ruhiger macher (menu flakkert)
+  - if condition wenn schon im raum
 - ' und "
-- wss enter room
 - textarea leeren, nach absenden
 - sich selber eine nachricht schicken ist auch schwachsinn ;)
+- wss leave room für alten beenden
+- evtl. messages von usern als json in lokaler db speichern (mit info - nachrichten werden für die dauer der session gespeichert)
+-- css änderung, wenn neue nachricht von user kommt (neben usernamen) 
+
+
+
+
+  was hab ich gemacht
+  - erstmal protptyp (wie funktioniert was)
+  - dann plan, was muss ich alles machen + implementierung des plans
+  - annahme: 
+      1. user darf nur in einem raum gleichzeitig sein (wäre auch anders gegangen)
+      2. es darf keinen raum mit dem namen "" (leer) geben
+  - erste überlegungungen für zusatzfunktionen: ba
+  - gründe für: 
+      1. device flow user wird nicht zurück gegeben (änderung an api)
+      2. logged in ist redundant, da ja header entsprechend zurückgegeben wird
+
 -->
 
 <head>
