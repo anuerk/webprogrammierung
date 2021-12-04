@@ -2,7 +2,6 @@
 <html lang="en">
 
 <!-- todo
-  - user login anbieten
   - info wenn screen zu schmal
   - alles enligsch
   - favicon
@@ -13,8 +12,6 @@
   - labels popups
   - label nachrichten schreiben textarea
   - lade screen währen fetch
-  - console log ausgaben verringern
-  - current user in rooms
   - hatte fehler, als bei erstem aufruf leere arrays zurück kamen. evtl mal fest setzten und dann testen -
   - - > vermutlich wird room name auf undefined gesetzt und dieser raum dann beim erstellen angelegt
   - - > evtl noch bug, wenn zuerset 401 nicht angemeldet kommt 
@@ -31,10 +28,15 @@ gründe für:
 2. logged in ist redundant, da ja header entsprechend zurückgegeben wird
 
 
-- anzahl request prüfen bei room enter
 - if condition wenn schon im raum
-- nachrichten an user schicken
-  -->
+' und "
+- wss enter room
+annahme: ich kann nur in einem raum sein, also geh ich zuerst aus dem raum raus, in dem ich bin, dann geh ich in den anderen, dann lese ich die alten nachrichten dort
+  
+
+- textarea leeren, nach absenden
+
+-->
 
 <head>
   <meta charset="UTF-8" />
@@ -50,49 +52,59 @@ gründe für:
     <!-- will be displayed if user is not logged in-->
     <div id="overlay">
       <div id="text"><br /><button id="logged_in" onclick="login_hide()">Gemacht :)</button></div>
-  </div>
-
-  <!-- header -->
-  <div class="header">
-    <button onclick="do_auth()">do auth</button>
-    <button onclick="get_rooms()">get rooms</button>
-    <button onclick="get_users()">get users</button>
-  </div>
-
-  <!-- body-->
-  <div id="container">
-    <!-- rooms-->
-    <div id="menu">
-      <div id="rooms">
-        <h2>rooms</h2>
-        <ul>
-          <li></li>
-        </ul>
-      </div>
-      <!-- user-->
-      <div id="users">
-        <h2>user</h2>
-      </div>
-    </div>
-    <!-- chat-->
-    <div id="chat">
-      <div id="chat_history">
-
-      </div>
-      <div id="chat_new">
-        <hr>
-        <label for="chat_input">chat:</label>
-        <textarea id="chat_input" name="chat_input" rows="4" cols="50"></textarea><br />
-        <button type="button" id="chat_send" onclick="send_message_in_room()">Send</button>
-      </div>
     </div>
 
+    <!-- header -->
+    <div class="header">
+      <button onclick="do_auth()">do auth</button>
+      <button onclick="get_rooms()">get rooms</button>
+      <button onclick="get_users()">get users</button>
+    </div>
 
-  </div>
-  <!-- footer-->
-  <div id="footer">
-    <h2>footer</h2>
-  </div>
+    <!-- body-->
+    <div id="container">
+      <!-- rooms-->
+      <div id="menu">
+        <div id="rooms">
+          <h2>rooms</h2>
+          <ul>
+            <li><input type="text" name="new_room" id="new_room"><button value="add" class="fas fa-plus"
+                aria-hidden="true">add</button>
+              <hr>
+            </li>
+            <li><button value="adsd" class="adsd">adsd</button></li>
+          </ul>
+        </div>
+        <!-- user-->
+        <div id="users">
+          <h2>user</h2>
+          <ul>
+            <li><input type="text" name="new_room" id="new_room"><button value="add" class="fas fa-plus"
+                aria-hidden="true">add</button>
+              <hr>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <!-- chat-->
+      <div id="chat">
+        <div id="chat_history">
+
+        </div>
+        <div id="chat_new">
+          <hr>
+          <label for="chat_input">chat:</label>
+          <textarea id="chat_input" name="chat_input" rows="4" cols="50"></textarea><br />
+          <button type="button" id="chat_send" onclick="send_message_in_room()">Send</button>
+        </div>
+      </div>
+
+
+    </div>
+    <!-- footer-->
+    <div id="footer">
+      <h2>footer</h2>
+    </div>
   </div>
 </body>
 <!-- todo only if logged in -->
