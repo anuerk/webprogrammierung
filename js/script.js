@@ -50,6 +50,11 @@ function init() {
         get_rooms()
         get_users()
         start_user_message_socket()
+
+        //todo anpassen von chat history max-height
+        document.getElementById("chat_history").style.height = screen.height * 0.75;
+        //scroll to end
+        document.getElementById("chat_history").scrollTop =  document.getElementById("chat_history").scrollHeight;
       }
     })
     .catch((error) => {
@@ -273,7 +278,7 @@ function format_users_in_room_html(room_name, user_data) {
   for (let user of user_data) {
     let li = document.createElement('li')
 
-    li.setAttribute('class', 'todo')
+    li.setAttribute('class', 'user_in_room')
     li.innerHTML = user
     ul.append(li)
   }
@@ -440,13 +445,9 @@ function start_room_message_sockets(room_name) {
 
   //Receive new messages
   let socket_room_messages = new WebSocket(socket_room_message_api_url + room_name + "/messages")
-  console.log('socket_room_messages')
-  console.log(socket_room_messages)
 
   socket_room_messages.onmessage = function (e) {
-    var server_message = e.data
-    //todo
-    alert('wss reponse: ' + server_message)
+    read_old_messages(current_room)
     return false
   }
 
@@ -458,12 +459,19 @@ function start_room_join_sockets(room_name) {
 
   //Receive new joins and leaves 
   let socket_room_joins = new WebSocket(socket_room_joins_api_url + room_name + "/users")
-  console.log('socket_room_joins')
-  console.log(socket_room_joins)
   socket_room_joins.onmessage = function (e) {
-    var server_message = e.data
-    //todo
-    alert('wss reponse: ' + server_message)
+    let server_message = JSON.parse(e.data)
+
+    let type = server_message.type
+    let user = server_message.user
+
+    document.getElementById("chat_history")
+
+    let p = document.createElement("p")
+    p.innerHTML = user + ' ' + type
+    p.classList.add("room_info");
+
+    document.getElementById("chat_history").append(p)
     return false
   }
 

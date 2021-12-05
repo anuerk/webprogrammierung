@@ -20,7 +20,7 @@
 - sich selber eine nachricht schicken ist auch schwachsinn ;)
 - evtl. messages von usern als json in lokaler db speichern (mit info - nachrichten werden für die dauer der session gespeichert)
 -- css änderung, wenn neue nachricht von user kommt (neben usernamen) 
-- wss repsonse einbauen
+- wss repsonse einbauens
 
 
 
@@ -66,11 +66,11 @@
     </div>
 
     <!-- header -->
-    <div class="header">
+    <!--<div class="header">
       <button onclick="do_auth()">do auth</button>
       <button onclick="get_rooms()">get rooms</button>
       <button onclick="get_users()">get users</button>
-    </div>
+    </div>-->
 
     <!-- body-->
     <div id="container">
@@ -100,7 +100,7 @@
       <!-- chat-->
       <div id="chat">
         <div id="chat_history">
-
+          <div id="room_header"></div>
         </div>
         <div id="chat_new">
           <hr>
@@ -109,12 +109,6 @@
           <button type="button" id="chat_send" onclick="send_message_in_room()">Send</button>
         </div>
       </div>
-
-
-    </div>
-    <!-- footer-->
-    <div id="footer">
-      <h2>footer</h2>
     </div>
   </div>
 </body>

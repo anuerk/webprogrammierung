@@ -12,6 +12,9 @@ h2 {
 
 h3{
     padding: 5px;
+    /* position: absolute; */
+    width: 100%;
+    margin: 10px;
 }
 
 .wrapper {
@@ -109,15 +112,23 @@ h3{
 #rooms li, #users li {
     list-style-type: none;
     padding-top: 5px;
+    /* margin-left: 10px; */
+    left: 10px;
 }
 
 #rooms ul, #users ul  {
     padding-left: 0;
 }
 
+.user_in_room{
+    margin-left: 1em;
+    font-style: italic;
+    font-size: 1em;
+}
+
 #rooms button, #users button {
     width: 100%;
-    background-color:#fff;
+    background-color: #fff;
     border:1px solid #000;
 }
 
@@ -164,10 +175,12 @@ h3{
 
 /* chat messages */
 #chat_history {
+    overflow-x: hidden;
     background-color: #fff;
     border: 1px solid #e5e5ea;
     border-radius: 0.25rem;
     display: flex;
+    max-height: 648px;
     flex-direction: column;
     font-family: "SanFrancisco";
     font-size: 1.25rem;
@@ -179,18 +192,32 @@ h3{
   #chat_history p {
     border-radius: 1.15rem;
     line-height: 1.25;
-    max-width: 75%;
+    /* width: 75%; */
     padding: 0.5rem .875rem;
     position: relative;
     word-wrap: break-word;
   }
   
+  #chat_history .room_info{
+    font-style: italic;
+    font-size: 0.5em;
+    text-align: center;
+  }
+
+  .room_info::after {
+    content: "------------------";
+  }
+
+ .room_info::before {
+    content: "------------------";
+  }
+
   #chat_history p::before,
   #chat_history p::after {
-    bottom: -0.1rem;
-    content: "";
-    height: 1rem;
-    position: absolute;
+    /* bottom: -0.1rem; */
+    /* content: ""; */
+    /* height: 1rem; */
+    /* position: absolute; */
   }
   
   p.from-me {
