@@ -102,6 +102,10 @@ h3{
     width:98%
 }
 
+.user_name {
+    font-weight: bold;
+}
+
 /* style for the left menu*/
 #rooms {
     flex: 1;
