@@ -3,9 +3,7 @@
 
 <!-- todo
   - info wenn screen zu schmal
-  - alles enligsch / bzw multilingual
   - file formatierung und ausmisten und ordnen
-  - file für sprache labels
   - label nachrichten schreiben textarea
   - lade screen währen fetch
   - hatte fehler, als bei erstem aufruf leere arrays zurück kamen. evtl mal fest setzten und dann testen -
@@ -17,6 +15,7 @@
 -- css änderung, wenn neue nachricht von user kommt (neben usernamen) 
 - "welcome screen"
 - join notifications nur innerhalb eines raums
+- wss wenn neue nachricht
 
   was hab ich gemacht
   - erstmal protptyp (wie funktioniert was)
@@ -40,6 +39,10 @@
           8. starte info websocket
           nach anuerk
 
+
+
+          https://www.pluralsight.com/guides/handling-nested-http-requests-using-the-fetch-api
+
 -->
 
 <head>
@@ -55,7 +58,7 @@
   <div class="wrapper">
     <!-- will be displayed if user is not logged in-->
     <div id="overlay">
-      <div id="text"><br /><button id="logged_in" onclick="login_hide()">Gemacht :)</button></div>
+      <div id="text"><br /><button id="logged_in" onclick="display_login('','',true)">Gemacht :)</button></div>
     </div>
 
     <!-- header -->
@@ -79,16 +82,6 @@
             <li><button value="adsd" class="adsd">adsd</button></li>
           </ul>
         </div>
-        <!-- user-->
-        <div id="users">
-          <h2>user</h2>
-          <ul>
-            <li><input type="text" name="new_room" id="new_room"><button value="add" class="fas fa-plus"
-                aria-hidden="true">add</button>
-              <hr>
-            </li>
-          </ul>
-        </div>
       </div>
       <!-- chat-->
       <div id="chat">
@@ -108,6 +101,15 @@
   </div>
 </body>
 <!-- todo only if logged in -->
-<script>init()</script>
+<script>
+(async() => {
+  console.log('before start')
+  show_loading(true)
+  await init()
+  
+  console.log('after start')
+  show_loading(false)
+})();
+</script>
 
 </html>
