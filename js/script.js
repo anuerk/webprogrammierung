@@ -14,22 +14,35 @@ const leave_room_api_url = "https://chatty.1337.cx/users/" //{user}/rooms
 const socket_room_message_api_url = "wss://chatty.1337.cx/rooms/" //{room_name/messages
 const socket_room_joins_api_url = "wss://chatty.1337.cx/rooms/" //{user}/rooms
 
-//labels todo auslagern
-const label_users = "users"
-const label_rooms = "rooms"
-const label_add = "add"
-const label_need_message = "you can not send an empty message"
-const label_user_offline = "user seems to be unavailable"
-const label_message_sent = "message sent"
-
 var current_user = ""
 var current_room = ""
 var current_room_join_websocket //= new WebSocket()
 var current_room_message_websocket //= new WebSocket()
+var labels
 
+// checks the browser language and load correct language file
+let userLang = navigator.language || navigator.userLanguage;
+let url
+switch (userLang) {
+  case "de":
+  case "de-CH":
+  case "de-AT":
+  case "de-LU":
+  case "de-LI":
+    url = "./js/lang.de.json"
+  default:
+    url = "./js/lang.en.json"
+}
+
+fetch(url).then(
+  function (u) { return u.json(); }
+).then(
+  function (json) {
+    labels = json;
+  }
+)
 
 function init() {
-
   console.log("init")
 
   fetch(auth_api_url, {
@@ -80,7 +93,7 @@ function get_rooms() {
   todo macht zu viel
   */
 
-  document.getElementById('rooms').innerHTML = '<h2>' + label_rooms + '</h2>'
+  document.getElementById('rooms').innerHTML = '<h2>' + labels.rooms + '</h2>'
   let ul = document.createElement('ul')
 
   fetch(get_rooms_api_url, {
@@ -100,8 +113,8 @@ function get_rooms() {
 
   let li = document.createElement("li")
   let btn = document.createElement("button")
-  btn.innerHTML = label_add
-  btn.value = label_add
+  btn.innerHTML = labels.add
+  btn.value = labels.add
   //todo net nur klick
   btn.addEventListener('click', function (event) {
     enter_chat(true);
@@ -140,7 +153,7 @@ function create_room_html(room) {
 }
 
 function get_users() {
-  document.getElementById('users').innerHTML = '<h2>' + label_users + '</h2>'
+  document.getElementById('users').innerHTML = '<h2>' + labels.users + '</h2>'
 
   fetch(get_users_api_url, {
     credentials: "include",
@@ -289,7 +302,7 @@ function format_users_in_room_html(room_name, user_data) {
 
 function send_message_in_room() {
   if (document.getElementById('chat_input').value.length === 0) {
-    alert(label_need_message)
+    alert(labels.need_message)
   }
   else {
     let send_message_url = delete_room_api_url + current_room + '/messages'
@@ -343,7 +356,6 @@ function enter_user_chat(user) {
   format_message_in_chat(user)
   document.getElementById('chat_send').onclick = function () { send_message_to_user(user); }
 }
-
 
 function leave_all_rooms() {
 
@@ -451,7 +463,7 @@ function send_message_to_user(user) {
   let chat_message = document.getElementById('chat_input').value
 
   if (document.getElementById('chat_input').value.length === 0) {
-    alert(label_need_message)
+    alert(labels.need_message)
   }
   else {
     let send_message_url = send_message_user_api_url + user + '/messages'
@@ -466,7 +478,7 @@ function send_message_to_user(user) {
     })
       .then(function (resp) {
         if (resp.status === 404) {
-          alert(label_user_offline)
+          alert(labels.user_offline)
         } else if (resp.status === 200) {
           document.getElementById('chat_input').value = ""
 
@@ -544,3 +556,4 @@ function addslashes(str) {
   //todo escape linebreak
   return (str + '').replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0')
 }
+

@@ -1,0 +1,8 @@
+{
+  "users": "Benutzer",
+  "rooms" : "Räume",
+  "add" : "hinzufügen",
+  "need_message" : "Nachricht darf nicht leer sein",
+  "user_offline" : "Benutzer ist derzeit nicht verfügbar",
+  "message_sent" : "Nachricht gesendet"
+}

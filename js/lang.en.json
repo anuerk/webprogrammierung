@@ -1,0 +1,8 @@
+{
+  "users": "users",
+  "rooms": "rooms",
+  "add": "add",
+  "need_message": "you can not send an empty message",
+  "user_offline": "user seems to be unavailable",
+  "message_sent": "message sent"
+}
