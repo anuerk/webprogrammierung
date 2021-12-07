@@ -19,6 +19,7 @@ var current_room = ""
 var current_room_join_websocket //= new WebSocket()
 var current_room_message_websocket //= new WebSocket()
 var labels
+var current_view = ""
 
 // checks the browser language and load correct language file
 let userLang = navigator.language || navigator.userLanguage;
@@ -42,10 +43,13 @@ fetch(url).then(
   }
 )
 
-function init() {
+async function init() {
+  /* this is the entry point */
+
   console.log("init")
 
-  fetch(auth_api_url, {
+
+  await fetch(auth_api_url, {
     credentials: "include",
     mode: "cors",
   })
@@ -54,40 +58,32 @@ function init() {
       return resp.json()
     })
     .then((json) => {
-      if (json.hasOwnProperty("verification_uri")) {
-        login_visible(json.verification_uri, json.user_code)
+
+      if (json.hasOwnProperty("verification_uri")) { //todo or if header is 401?
+        display_login(json.verification_uri, json.user_code, false)
       } else {
         // user is logged in - clean up first :)
         current_user = json.user
-
-        leave_all_rooms()
-        get_rooms()
-        get_users()
-        start_user_message_socket()
-
-        // fit chat window to screen size
-        document.getElementById("chat_history").style.height = screen.height * 0.75;
       }
+
     })
     .catch((error) => {
       console.log(error)
     });
+
+  await leave_all_rooms()
+  await start_user_message_socket()
+  await get_rooms()
+
+   // fit chat window to screen size
+   document.getElementById("chat_history").style.height = screen.height * 0.75
+
+
+
+  return
 }
 
-//todo login_visible login_hide vereinen mit true false paramter
-function login_visible(url, code) {
-  document.getElementById("overlay").style.display = "block"
-
-  let tmpStr = document.getElementById("text").innerHTML
-  document.getElementById("text").innerHTML = "Please login fist <a href='" + url + "' target='blank'>here</a> <br/>" + "with code <br/><b>" + code + "</b>" + tmpStr
-}
-
-function login_hide(url, code) {
-  document.getElementById("overlay").style.display = "none";
-  init()
-}
-
-function get_rooms() {
+async function get_rooms() {
   /*
   baut gerade den inhalt des kompletten rooms divs auf
   todo macht zu viel
@@ -95,27 +91,26 @@ function get_rooms() {
 
   document.getElementById('rooms').innerHTML = '<h2>' + labels.rooms + '</h2>'
   let ul = document.createElement('ul')
-
-  fetch(get_rooms_api_url, {
+  let rooms = await fetch(get_rooms_api_url, {
     credentials: "include",
-  })
-    .then((resp) => resp.json())
-    .then(function (data) {
-      for (let room of data) {
-        li = create_room_html(room)
-        ul.appendChild(li)
-      }
-      return
-    })
-    .catch(function (error) {
-      console.log(error)
-    })
+  }).then(response => response.json());
+  
+  for (let room of rooms) {
+    //li = create_room_html(room)
+    let li = document.createElement("li")
+    let btn = document.createElement("button")
+    btn.innerHTML = room
+    btn.value = room
+    btn.classList.add(room);
+    btn.addEventListener("click", enter_chat)
+    li.appendChild(btn)
+    ul.appendChild(li)
+  }
 
   let li = document.createElement("li")
   let btn = document.createElement("button")
   btn.innerHTML = labels.add
   btn.value = labels.add
-  //todo net nur klick
   btn.addEventListener('click', function (event) {
     enter_chat(true);
   });
@@ -139,37 +134,46 @@ function get_rooms() {
   document.getElementById('rooms').append(ul)
 }
 
-function create_room_html(room) {
-  let li = document.createElement("li")
-  let btn = document.createElement("button")
-  btn.innerHTML = room
-  btn.value = room
-  btn.classList.add(room);
-  //todo net nur klick
-  btn.addEventListener("click", enter_chat)
-  li.appendChild(btn)
-
-  return li
+function display_login(url, code, hide) { // todo tausche true false
+  if (hide === true) {
+    document.getElementById("overlay").style.display = "none"; //todo z index
+    init()
+  } else {
+    document.getElementById("overlay").style.display = "block"
+    let tmpStr = document.getElementById("text").innerHTML
+    document.getElementById("text").innerHTML = "Please login fist <a href='" + url + "' target='blank'>here</a> <br/>" + "with code <br/><b>" + code + "</b>" + tmpStr
+  }
 }
 
-function get_users() {
-  document.getElementById('users').innerHTML = '<h2>' + labels.users + '</h2>'
+function show_loading(show) {
 
-  fetch(get_users_api_url, {
+  if (show === true) {
+    console.log('loading wird angezeigt')
+    document.getElementById("overlay").style.display = "block"
+    let tmpStr = document.getElementById("text").innerHTML
+    document.getElementById("text").innerHTML = "i am a loading animation :)" //todo
+
+  } else {
+    console.log('loading wird ausgeblendet')
+    document.getElementById("overlay").style.display = "none";
+  }
+}
+
+async function leave_all_rooms() {
+  // will be called by initial
+  console.log('leave_all_rooms')
+
+  fetch(leave_room_api_url + current_user + '/rooms', {
     credentials: "include",
   })
     .then((resp) => resp.json())
     .then(function (data) {
-      let ul = document.createElement('ul')
-
-      for (let user of data) {
-        if (user !== current_user) {
-          li = create_user_html(user)
-          ul.appendChild(li)
+      console.log('then in fetch leav_all_rooms')
+      for (let key in data) {
+        if (data.hasOwnProperty(key)) {
+          leave_room(data[key])
         }
       }
-
-      document.getElementById('users').append(ul)
       return
     })
     .catch(function (error) {
@@ -177,15 +181,69 @@ function get_users() {
     });
 }
 
+
+async function leave_room(room_name) {
+  console.log('you will leave to room ' + room_name)
+  let delete_fetch_url = delete_room_api_url + room_name + '/users'
+
+  fetch(delete_fetch_url, {
+    method: 'delete',
+    credentials: "include",
+  })
+    .then(function (data) {
+      if (typeof (document.getElementsByClassName('user_list_item')[0]) !== "undefined") {
+        console.log('inif - soll aber niemals sein ')
+        console.log(document.getElementsByClassName('user_list_item'))
+        document.getElementsByClassName('user_list_item')[0].remove()
+      }
+
+      // remove existing user list in room but only if it not the first call
+      /*if (typeof (document.getElementsByClassName('user_list_item')[0]) !== "undefined") {
+       console.log('inif')
+       console.log(document.getElementsByClassName('user_list_item'))
+       document.getElementsByClassName('user_list_item')[0].remove()
+
+       // not sure why this happens - need help :( sometimes there are still the old user lists (if you switch fast the rooms) - todoF
+      /* if (document.getElementsByClassName('user_list_item').length > 1) {
+         console.log('da ist ja mejhr :_(')
+         let elements = document.getElementsByClassName('user_list_item')
+         while (elements.length > 0) {
+          // elements[0].parentNode.removeChild(elements[0]);
+         }
+       }
+     }*/
+
+
+      end_room_sockets(room_name)
+
+      return
+    })
+    .catch(function (error) {
+      console.log(error)
+    })
+}
+
+/*
+function create_room_html(room) {
+  let li = document.createElement("li")
+  let btn = document.createElement("button")
+  btn.innerHTML = room
+  btn.value = room
+  btn.classList.add(room);
+  btn.addEventListener("click", enter_chat)
+  li.appendChild(btn)
+
+  return li
+}*/
+
 function create_user_html(user) {
   let li = document.createElement("li")
+
   let btn = document.createElement("button")
   btn.innerHTML = user
   btn.value = user
   btn.classList.add(user);
-  //todo net nur klick
   btn.addEventListener('click', function (event) {
-    //send_message_to_user(user)
     enter_user_chat(user)
   });
 
@@ -196,9 +254,13 @@ function create_user_html(user) {
 
 // wird aufgerufen bei room-button click
 function enter_chat(create_new_room) {
+//todo vergleiche fetch await mit login, dass loading mask tut :)
+  console.log('enter chat')
+  show_loading(true)
+
   // update header
   document.getElementById('chat_send').onclick = function () { send_message_in_room(); }
-
+  current_view = "room"
   // initialize variables
   let enter_fetch_url = ""
   let room = ""
@@ -221,7 +283,14 @@ function enter_chat(create_new_room) {
   }
   else {
     if (current_room != "") {
-      leave_room(current_room)
+      (async () => {
+        console.log('before start');
+
+        await leave_room(current_room)
+
+        console.log('after start');
+      })();
+
     }
 
     // enter new room
@@ -253,9 +322,9 @@ function enter_chat(create_new_room) {
           current_room_message_websocket = start_room_join_sockets(room)
 
         }
-        else if (resp.status = 404) {
-          console.log("passiert doch net, oder? todo 2 You are not in the room " + room)
-        }
+
+        // list users in room
+        get_user_in_rooms(room)
 
         return
       })
@@ -263,10 +332,11 @@ function enter_chat(create_new_room) {
         console.log(error)
       });
 
-    // list users in room
-    get_user_in_rooms(room)
-    get_users()
+
   }
+
+  console.log('display login')
+  show_loading(false)
 }
 
 function get_user_in_rooms(room_name) {
@@ -285,16 +355,21 @@ function get_user_in_rooms(room_name) {
     });
 }
 
+
 function format_users_in_room_html(room_name, user_data) {
   console.log('format_users_in_room_html')
+  // remove old list if it exists
+  if (document.getElementById("rooms").getElementsByClassName('test')[0].nextSibling !== null) {
+    document.getElementById("rooms").getElementsByClassName('test')[0].nextSibling.innerHTML = ''
+  }
+
+
   let ul = document.createElement('ul')
+  ul.classList.add('user_list_item')
   let room_list_item = document.getElementById("rooms").getElementsByClassName(room_name)[0];
 
   for (let user of user_data) {
-    let li = document.createElement('li')
-
-    li.setAttribute('class', 'user_in_room')
-    li.innerHTML = user
+    let li = create_user_html(user)
     ul.append(li)
   }
   room_list_item.after(ul)
@@ -332,11 +407,14 @@ function send_message_in_room() {
 }
 
 function read_old_messages(room) {
-  document.getElementById('chat_history').innerHTML = '<h3>' + room + '</h3>'
+  document.getElementById("chat_history").innerHTML = ''
+  let div = document.createElement("div")
+  div.classList.add("room_container")
+  div.innerHTML = '<h3>' + room + '</h3>'
+
+  document.getElementById('chat_history').append(div)
 
   let fetch_rooms_messages = get_message_for_room_api_url + room + "/messages"
-  let enter_fetch_url = ""
-
   fetch(fetch_rooms_messages, {
     credentials: "include",
   })
@@ -353,46 +431,11 @@ function read_old_messages(room) {
 }
 
 function enter_user_chat(user) {
+  console.log('enter user chat')
   format_message_in_chat(user)
   document.getElementById('chat_send').onclick = function () { send_message_to_user(user); }
 }
 
-function leave_all_rooms() {
-
-  fetch(leave_room_api_url + current_user + '/rooms', {
-    credentials: "include",
-  })
-    .then((resp) => resp.json())
-    .then(function (data) {
-      for (let key in data) {
-        if (data.hasOwnProperty(key)) {
-          leave_room(data[key])
-        }
-      }
-      return
-    })
-    .catch(function (error) {
-      console.log(error)
-    });
-}
-
-function leave_room(room_name) {
-  let delete_fetch_url = delete_room_api_url + room_name + '/users'
-
-  fetch(delete_fetch_url, {
-    method: 'delete',
-    credentials: "include",
-  })
-    .catch(function (error) {
-      console.log(error)
-    })
-
-  end_room_sockets(room_name)
-
-  if (typeof document.getElementById("rooms").getElementsByClassName(room_name)[0] !== "undefined") {
-    document.getElementById("rooms").getElementsByClassName(room_name)[0].nextSibling.innerHTML = ""
-  }
-}
 
 function start_room_message_sockets(room_name) {
 
@@ -400,8 +443,9 @@ function start_room_message_sockets(room_name) {
   let socket_room_messages = new WebSocket(socket_room_message_api_url + room_name + "/messages")
 
   socket_room_messages.onmessage = function (e) {
+    console.log('new message in room :)')
     read_old_messages(current_room)
-    return false
+    return
   }
 
   return socket_room_messages
@@ -409,25 +453,21 @@ function start_room_message_sockets(room_name) {
 }
 
 function start_room_join_sockets(room_name) {
-
   //Receive new joins and leaves 
   let socket_room_joins = new WebSocket(socket_room_joins_api_url + room_name + "/users")
   socket_room_joins.onmessage = function (e) {
+    console.log('Receive new joins and leaves ')
+    get_user_in_rooms(current_room)
     let server_message = JSON.parse(e.data)
-
-    let type = server_message.type
-    let user = server_message.user
-
-    document.getElementById("chat_history")
-
     let p = document.createElement("p")
-    p.innerHTML = user + ' ' + type
+
+    p.innerHTML = server_message.user + ' ' + server_message.type
     p.classList.add("room_info");
 
-    document.getElementById("chat_history").append(p)
-
-    get_users()
-    return false
+    document.getElementsByClassName('room_container')[0].append(p)
+    //scroll to end
+    document.getElementById("chat_history").scrollTop = document.getElementById("chat_history").scrollHeight;
+    return
   }
 
   return socket_room_joins
@@ -445,13 +485,12 @@ function end_room_sockets(room_name) {
   }
 }
 
-function start_user_message_socket() {
-  const ws = new WebSocket("wss://chatty.1337.cx/me/messages")
+async function start_user_message_socket() {
+  const ws = new WebSocket("wss://chatty.1337.cx/me/messages") // todo hier const unten let ??
 
   ws.onmessage = function (e) {
     let server_message = JSON.parse(e.data)
-    console.log('server message from user')
-    console.log(server_message.user)
+    alert('server message from user' + server_message.user)
 
     store_chat_in_local_storage(server_message.user, server_message.user, server_message.message)
     format_message_in_chat(server_message.user)
@@ -511,10 +550,10 @@ function format_message_in_chat(data) {
   // makes html elements which contains the chat messages 
   // todo evtl ausmisten
 
-  let chat_window = document.getElementById('chat_history')
-
   if (typeof (data) === 'object') {
     // items for room chat
+    let chat_window = document.getElementsByClassName('room_container')[0]
+
     for (let item in data) {
       let p = document.createElement("p")
       if (data[item].user == current_user) {
@@ -528,7 +567,17 @@ function format_message_in_chat(data) {
       chat_window.append(p)
     }
   } else {
-    document.getElementById('chat_history').innerHTML = '<h3>Chat with user ' + data + '</h3>'
+
+
+    document.getElementById("chat_history").innerHTML = ''
+    let chat_window = document.createElement("div")
+    chat_window.style.height = screen.height * 0.75;
+    chat_window.classList.add("user_chat_container")
+    chat_window.innerHTML = '<h3>todo label! Chat with user ' + data + '</h3>'
+    document.getElementById("chat_history").style.height = screen.height * 0.75;
+
+    document.getElementById('chat_history').append(chat_window)
+
     // items for user chat
     if (localStorage.getItem(data) !== null) {
       let chat_history = JSON.parse(localStorage.getItem(data))
