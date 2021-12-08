@@ -5,5 +5,6 @@
   "need_message": "you can not send an empty message",
   "user_offline": "user seems to be unavailable",
   "message_sent": "message sent",
-  "welcome": "Hi </br> left are the rooms - select one to start the journey :) <br/> or create a new one"
+  "welcome": "Hi </br> left are the rooms - select one to start the journey :) <br/> or create a new one",
+  "loading": "loading"
 }

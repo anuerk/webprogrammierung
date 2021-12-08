@@ -4,7 +4,7 @@
 <!-- todo
   - info wenn screen zu schmal
   - file formatierung und ausmisten und ordnen
-  - lade screen währen fetch
+  - lade screen währen fetch - aber nur der spinner soll sich drehen, nicht der text :)
   - hatte fehler, als bei erstem aufruf leere arrays zurück kamen. evtl mal fest setzten und dann testen -
   - - > vermutlich wird room name auf undefined gesetzt und dieser raum dann beim erstellen angelegt
   - - > evtl noch bug, wenn zuerset 401 nicht angemeldet kommt 
@@ -56,7 +56,9 @@
   <div class="wrapper">
     <!-- will be displayed if user is not logged in-->
     <div id="overlay">
-      <div id="text"><br /><button id="logged_in" onclick="display_login('','',true)">Gemacht :)</button></div>
+      <div id="login_info"><br />
+        <button style="display:none" id="logged_in" onclick="display_login('','',true)">Gemacht :)</button>
+      </div>
     </div>
 
     <!-- body-->
@@ -99,14 +101,14 @@
 <!-- todo only if logged in -->
 <script>
   (async () => {
-    console.log('before start')
     show_loading(true)
     await init()
-
-    console.log('after start')
     
     document.getElementById("chat_history").innerHTML =labels.welcome
-    show_loading(false)
+    
+    if(current_user){
+      show_loading(false)
+    }
   })();
 </script>
 

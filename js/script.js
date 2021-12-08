@@ -48,7 +48,7 @@ async function init() {
 
   console.log("init")
   document.querySelector("#chat_new").style.display = 'none'
-  
+let logged_in = false
 
   await fetch(auth_api_url, {
     credentials: "include",
@@ -61,20 +61,26 @@ async function init() {
     .then((json) => {
 
       if (json.hasOwnProperty("verification_uri")) { //todo or if header is 401?
+        console.log('call display_login false')
         display_login(json.verification_uri, json.user_code, false)
+        logged_in = false
       } else {
         // user is logged in - clean up first :)
         current_user = json.user
+        logged_in = true
       }
 
     })
     .catch((error) => {
       console.log(error)
     });
+    console.log('user is: ' +logged_in )
 
-  await leave_all_rooms()
-  await start_user_message_socket()
-  await get_rooms()
+    if(logged_in === true){
+      await leave_all_rooms()
+      await start_user_message_socket()
+      await get_rooms()
+    }
 
   return
 }
@@ -131,30 +137,43 @@ async function get_rooms() {
 }
 
 function display_login(url, code, hide) { // todo tausche true false
+  console.log('display_login')
   if (hide === true) {
     document.getElementById("overlay").style.display = "none"; //todo z index
     init()
   } else {
+   
+    let tmpStr = document.getElementById("login_info").innerHTML
+    document.getElementById("login_info").innerHTML = "Please login fist <a href='" + url + "' target='blank'>here</a> <br/>" + "with code <br/><b>" + code + "</b>" + tmpStr
     document.getElementById("overlay").style.display = "block"
-    let tmpStr = document.getElementById("text").innerHTML
-    document.getElementById("text").innerHTML = "Please login fist <a href='" + url + "' target='blank'>here</a> <br/>" + "with code <br/><b>" + code + "</b>" + tmpStr
+    document.getElementById("logged_in").style.display = ""
   }
 }
 
 function show_loading(show, text) {
-
+  console.log('show_loading')
+  //debugger
   if (show === true) {
-    console.log('loading wird angezeigt')
     document.getElementById("overlay").style.display = "block"
-    let tmpStr = document.getElementById("text").innerHTML
+    document.getElementById("container").style.display = "none"
+  
     if (typeof (text) !== undefined) {
-      console.log('text: ' + text)
-      document.getElementById("text").innerHTML = "i am a loading animation :)" //todo
+      let spinner = document.createElement("div")
+      spinner.classList.add('loading_spinner')
+      console.log('xxx')
+      console.log(current_user)
+      if(current_user){
+
+      console.log('current user in if')
+      document.getElementById("login_info").innerHTML='<p>site is loading...</p>' //labels.loading
+      document.getElementById("login_info").append(spinner)
+      }else{
+        console.log('current user in else')
+      }
+      
     }
-
-
   } else {
-    console.log('loading wird ausgeblendet')
+    document.getElementById("container").style.display = "flex"
     document.getElementById("overlay").style.display = "none";
   }
 }
@@ -163,7 +182,7 @@ async function leave_all_rooms() {
   // will be called by initial
   console.log('leave_all_rooms')
 
-  fetch(leave_room_api_url + current_user + '/rooms', {
+  await fetch(leave_room_api_url + current_user + '/rooms', {
     credentials: "include",
   })
     .then((resp) => resp.json())
@@ -255,7 +274,7 @@ function create_user_html(user) {
 async function enter_chat(create_new_room) {
   //todo vergleiche fetch await mit login, dass loading mask tut :)
   console.log('enter chat')
-  show_loading(true, 'i am a loading animation :)') //todo label
+  show_loading(true)
 
   // update header
   document.getElementById('chat_send').onclick = function () { send_message_in_room(); }
@@ -273,18 +292,10 @@ async function enter_chat(create_new_room) {
     enter_fetch_url = join_room_api_url + room + '/users'
   }
 
-  if (current_room == room) {
-    console.log("You are already in the room " + room)
-    //read_old_messages(room)
-  }
-  else {
+  if (current_room != room) {
     if (current_room != "") {
       (async () => {
-        console.log('before start');
-
         await leave_room(current_room)
-
-        console.log('after start');
       })();
 
     }
@@ -299,7 +310,6 @@ async function enter_chat(create_new_room) {
 
         if (resp.status = 200) {
           // you joined the room 
-          console.log('read_old_messages by enter_room')
           read_old_messages(room)
           if (current_room_join_websocket !== undefined && current_room_join_websocket.readyState === 3) {
             current_room_join_websocket.close()
@@ -323,29 +333,23 @@ async function enter_chat(create_new_room) {
 
         // list users in room
         if (current_room_join_websocket.readyState !== 3) {
-          console.log('get_user_in_rooms by enter_room')
           get_user_in_rooms(room)
         }
 
-
         return
       })
-      .catch(function (error) {
-        console.log(error)
-      });
-
-
+        .catch(function (error) {
+          console.log(error)
+        });
   }
 
-  console.log('display login')
   document.querySelector("#chat_new").style.display = ''
-  show_loading(false)
 }
 
-function get_user_in_rooms(room_name) {
+async function get_user_in_rooms(room_name) {
   console.log('get_user_in_rooms')
 
-  fetch(revieve_user_in_room_api_url + room_name + '/users', {
+  await fetch(revieve_user_in_room_api_url + room_name + '/users', {
     credentials: "include",
   })
     .then((resp) => resp.json())
@@ -362,12 +366,8 @@ function format_users_in_room_html(room_name, user_data) {
   console.log('format_users_in_room_html')
   // remove old list if it exists
   if (document.getElementById("rooms").getElementsByClassName(room_name)[0].nextSibling !== null) {
-    console.log('remove old list')
     document.getElementById("rooms").getElementsByClassName(room_name)[0].nextSibling.innerHTML = ''
-  } else {
-    console.log('keep old list')
-  }
-
+  } 
 
   let ul = document.createElement('ul')
   ul.classList.add('user_list_item')
@@ -378,6 +378,7 @@ function format_users_in_room_html(room_name, user_data) {
     ul.append(li)
   }
   room_list_item.after(ul)
+  show_loading(false)
 }
 
 function send_message_in_room() {
@@ -407,7 +408,7 @@ function send_message_in_room() {
   }
 }
 
-function read_old_messages(room) {
+async function read_old_messages(room) {
   document.getElementById("chat_history").innerHTML = ''
 
   // create room header -todo evtl auslagern
@@ -429,7 +430,7 @@ function read_old_messages(room) {
   document.getElementById('chat_history').append(div)
 
   let fetch_rooms_messages = get_message_for_room_api_url + room + "/messages"
-  fetch(fetch_rooms_messages, {
+  await fetch(fetch_rooms_messages, {
     credentials: "include",
   })
     .then((resp) => resp.json())
@@ -454,7 +455,7 @@ function enter_user_chat(user) {
 
 function send_message_to_user(user) {
   console.log('will send a messega to user ' + user)
-  
+
   let chat_message = document.getElementById('chat_input').value
 
   if (document.getElementById('chat_input').value.length === 0) {
@@ -500,15 +501,15 @@ async function start_user_message_socket() {
   }
 }
 
-function add_li_to_privat_chat(user){
+function add_li_to_privat_chat(user) {
   console.log('add_li_to_privat_chat' + user)
   let ul = document.getElementsByClassName('private_chats_ul')[0]
   let li = document.createElement("li");
-  li.appendChild(document.createTextNode("Four"));
+  li.appendChild(document.createTextNode(user));
   ul.appendChild(li);
 }
 
-function start_room_message_sockets(room_name) {
+async function start_room_message_sockets(room_name) {
   // tut net :(
   //Receive new messages
   let socket_room_messages = new WebSocket(socket_room_message_api_url + room_name + "/messages")
@@ -526,7 +527,7 @@ function start_room_message_sockets(room_name) {
 
 }
 
-function start_room_join_sockets(room_name) {
+async function start_room_join_sockets(room_name) {
   //Receive new joins and leaves 
   let socket_room_joins = new WebSocket(socket_room_joins_api_url + room_name + "/users")
   socket_room_joins.onmessage = function (e) {
@@ -569,6 +570,9 @@ function end_room_sockets(room_name) {
 
 function store_chat_in_local_storage(chat_partner, message_from, message) {
   // stores the direct messages in localstorage
+console.log('store_chat_in_local_storage')
+
+
   if (localStorage.getItem(chat_partner) === null) { // first message from a user     
     let text = '[{ "from_user":"' + message_from + '"  , "message":"' + addslashes(message) + '" }]'
     localStorage.setItem(chat_partner, text)
@@ -645,3 +649,5 @@ window.addEventListener('resize', function (event) {
   //document.getElementById("chat_history").style.height = screen.height * 0.75;
   // would be nice if i could do something when the browser zoom is active :(
 }, true);
+
+
