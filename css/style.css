@@ -74,8 +74,8 @@ h3{
     border: 1px solid black
 }
 
-#chat_history{
-    /* height: 500px; */
+#chat_history, #user_chat_container{
+    margin: 1em;
     /* height: calc(100% - 703px); */
     /* top: 0; */
     overflow: auto;
@@ -112,7 +112,7 @@ h3{
 }
 
 /* style for the left menu*/
-#rooms {
+#rooms, #private_chats {
     flex: 1;
     padding:5px;
     /* border: 1px solid black */
@@ -172,7 +172,7 @@ h3{
 }
 
 /* chat messages */
-.room_container {
+.room_container, .user_chat_container {
     overflow-x: hidden;
     border-radius: 0.25rem;
     display: flex;

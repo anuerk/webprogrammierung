@@ -47,8 +47,8 @@ async function init() {
   /* this is the entry point */
 
   console.log("init")
-  document.querySelector("#chat_new").style.display='none'
-
+  document.querySelector("#chat_new").style.display = 'none'
+  
 
   await fetch(auth_api_url, {
     credentials: "include",
@@ -180,7 +180,6 @@ async function leave_all_rooms() {
       console.log(error)
     });
 }
-
 
 async function leave_room(room_name) {
   console.log('you will leave to room ' + room_name)
@@ -339,7 +338,7 @@ async function enter_chat(create_new_room) {
   }
 
   console.log('display login')
-  document.querySelector("#chat_new").style.display=''
+  document.querySelector("#chat_new").style.display = ''
   show_loading(false)
 }
 
@@ -447,8 +446,66 @@ function read_old_messages(room) {
 
 function enter_user_chat(user) {
   console.log('enter user chat')
+  document.getElementsByClassName('room_header')[0].innerHTML = '<h3>User: ' + user + '</h3>'
   format_message_in_chat(user)
+  add_li_to_privat_chat(user)
   document.getElementById('chat_send').onclick = function () { send_message_to_user(user); }
+}
+
+function send_message_to_user(user) {
+  console.log('will send a messega to user ' + user)
+  
+  let chat_message = document.getElementById('chat_input').value
+
+  if (document.getElementById('chat_input').value.length === 0) {
+    alert(labels.need_message)
+  }
+  else {
+    let send_message_url = send_message_user_api_url + user + '/messages'
+    fetch(send_message_url, {
+      method: 'POST',
+      credentials: "include",
+      headers: {
+        'Content-Type': 'text/plain',
+      },
+      body: chat_message
+    })
+      .then(function (resp) {
+        if (resp.status === 404) {
+          alert(labels.user_offline)
+        } else if (resp.status === 200) {
+          document.getElementById('chat_input').value = ""
+
+          store_chat_in_local_storage(user, current_user, chat_message)
+          format_message_in_chat(user)
+        }
+
+        return
+      })
+      .catch(function (error) {
+        console.log(error)
+      });
+  }
+}
+
+async function start_user_message_socket() {
+  const ws = new WebSocket("wss://chatty.1337.cx/me/messages") // todo hier const unten let ??
+
+  ws.onmessage = function (e) {
+    let server_message = JSON.parse(e.data)
+    alert('server message from user' + server_message.user)
+    add_li_to_privat_chat(user)
+    store_chat_in_local_storage(server_message.user, server_message.user, server_message.message)
+    format_message_in_chat(server_message.user)
+  }
+}
+
+function add_li_to_privat_chat(user){
+  console.log('add_li_to_privat_chat' + user)
+  let ul = document.getElementsByClassName('private_chats_ul')[0]
+  let li = document.createElement("li");
+  li.appendChild(document.createTextNode("Four"));
+  ul.appendChild(li);
 }
 
 function start_room_message_sockets(room_name) {
@@ -507,52 +564,8 @@ function end_room_sockets(room_name) {
   }
 }
 
-async function start_user_message_socket() {
-  const ws = new WebSocket("wss://chatty.1337.cx/me/messages") // todo hier const unten let ??
 
-  ws.onmessage = function (e) {
-    let server_message = JSON.parse(e.data)
-    alert('server message from user' + server_message.user)
 
-    store_chat_in_local_storage(server_message.user, server_message.user, server_message.message)
-    format_message_in_chat(server_message.user)
-  }
-}
-
-function send_message_to_user(user) {
-
-  let chat_message = document.getElementById('chat_input').value
-
-  if (document.getElementById('chat_input').value.length === 0) {
-    alert(labels.need_message)
-  }
-  else {
-    let send_message_url = send_message_user_api_url + user + '/messages'
-    fetch(send_message_url, {
-      method: 'POST',
-      credentials: "include",
-      headers: {
-        'Content-Type': 'text/plain',
-      },
-      body: chat_message
-    })
-      .then(function (resp) {
-        if (resp.status === 404) {
-          alert(labels.user_offline)
-        } else if (resp.status === 200) {
-          document.getElementById('chat_input').value = ""
-
-          store_chat_in_local_storage(user, current_user, chat_message)
-          format_message_in_chat(user)
-        }
-
-        return
-      })
-      .catch(function (error) {
-        console.log(error)
-      });
-  }
-}
 
 function store_chat_in_local_storage(chat_partner, message_from, message) {
   // stores the direct messages in localstorage
@@ -625,10 +638,10 @@ function addslashes(str) {
 }
 
 //helper to fit the chat
-window.addEventListener('resize', function(event) {
- console.log('resized ')
+window.addEventListener('resize', function (event) {
+  console.log('resized ')
 
- //document.getElementById("chat_history")
- //document.getElementById("chat_history").style.height = screen.height * 0.75;
-// would be nice if i could do something when the browser zoom is active :(
+  //document.getElementById("chat_history")
+  //document.getElementById("chat_history").style.height = screen.height * 0.75;
+  // would be nice if i could do something when the browser zoom is active :(
 }, true);
