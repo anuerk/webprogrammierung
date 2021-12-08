@@ -22,6 +22,7 @@ h3{
     flex-direction: column;
     height: 100%;
     min-height: 100%;
+    overflow: hidden;
 }
 
 #overlay {
@@ -82,16 +83,20 @@ h3{
     /* text-align: center; */
     /* position: fixed; */
     /* left: 100px; */
-    height: 631px;
+    height: 63%;
     flex: 1;
-    background-color: green;
+    max-height: 300px;
+    /* background-color: green; */
 }
 
 #chat_new{
-    bottom: 0px;
-    position: absolute;
+    /* bottom: 0px; */
+    /* position: absolute; */
     padding: 0 0 0 10px;
-    width: 95%;
+    /* width: 95%; */
+    height: 20%;
+    /* z-index: 0; */
+    /* display: none; */
 }
 
 #chat_new label{
@@ -99,7 +104,7 @@ h3{
 }
 
 #chat_new textarea{
-    width:98%
+    width: auto;
 }
 
 .user_name {
@@ -154,11 +159,6 @@ h3{
 /* style for the chat window*/
 #chat {
     flex: 5;
-    /* text-align: center; */
-    position: relative;
-    /* background-color: green; */
-    /* padding:5px; */
-    /* border: 1px solid black */
 }
 
 #chat_history li {
@@ -174,24 +174,18 @@ h3{
 /* chat messages */
 .room_container {
     overflow-x: hidden;
-    /* background-color: #fff; */
-    /* border: 1px solid #e5e5ea; */
     border-radius: 0.25rem;
     display: flex;
-    /* max-height: 47%; */
     flex-direction: column;
-    /* font-family: "SanFrancisco"; */
-    /* font-size: 1.25rem; */
-    /* margin: 0 auto 1rem; */
-    /* max-width: 600px; */
-    /* height: inherit; */
-    /* padding: 0.5rem 1.5rem; */
+  }
+
+  .room_header{
+      height: 5%;
   }
   
   #chat_history p {
     border-radius: 1.15rem;
     line-height: 1.25;
-    /* width: 75%; */
     padding: 0.5rem .875rem;
     position: relative;
     word-wrap: break-word;
