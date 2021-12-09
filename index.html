@@ -31,8 +31,11 @@
         <div id="new_room_div">
           <ul>
             <li>
-              <input type="text" name="new_room" id="new_room">
-              <button value="add" aria-hidden="true">add</button>
+              <label for="new_room" aria-hidden="true">new room name?<br />
+                <input type="text" name="new_room" id="new_room"></label> <!--  todo label -->
+              <label for="new_room_btn" class="hidden">new room?<br />
+                <button type="button" id="new_room_btn" onclick="create_new_room()"
+                  aria-hidden="true">add</button></label> <!--  todo label -->
             </li>
           </ul>
         </div>
@@ -53,7 +56,6 @@
           </div>
         </div>
         <div id="chat_new">
-          <hr>
           <form>
             <label for="chat_input">chat:</label> <!--  todo label -->
             <textarea id="chat_input" name="chat_input" rows="4" cols="50"></textarea><br />
