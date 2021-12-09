@@ -1,13 +1,15 @@
 /*
 here happens the logic for the chat client
 
-- enter room mit leerzeichen 
-- file formatierung und ausmisten und ordnen
-- create new room error
-- ' und "
--- css änderung, wenn neue nachricht von user kommt (neben usernamen) 
-- was wenn aber "done" aber gelogen?
-- offline
+- nach create room kann man ihn noch mal joinen -> fehler in enter_chat ifs
+- file formatierung und ausmisten und ordnen ' und "
+- semikolun am ende?
+-- css änderung, wenn neue nachricht von user kommt (neben usernamen)
+- scroller hängt ab und zu
+- auskommentierte sachen und console.log wegmscheißen und alert
+- text strings durch labels ersetztn
+- private chat testen
+
 -----------------------------------------------------------------------------
 
 
@@ -90,8 +92,13 @@ async function init() {
     mode: "cors",
   })
     .then(function (resp) {
-      //if (resp.status == 401)
-      return resp.json()
+      if (resp.status == 400) {
+        alert("you lied - clear you cookies and try again")
+        throw new Error("you lied - clear you cookies and try again");
+      }
+      else {
+        return resp.json()
+      }
     })
     .then((json) => {
 
@@ -121,9 +128,9 @@ async function init() {
 
 async function get_rooms() {
   // remove existing rooms
-  document.getElementById('rooms').innerHTML=''
+  document.getElementById('rooms').innerHTML = ''
 
-// get new ones
+  // get new ones
   let ul = document.createElement('ul')
   let rooms = await fetch(get_rooms_api_url, {
     credentials: "include",
@@ -148,10 +155,10 @@ async function get_rooms() {
 
 }
 
-function display_login(url, code, hide) { // todo tausche true false
+function display_login(url, code, hide) {
   if (hide === true) {
     show_loading(false)
-    document.getElementById("overlay").style.display = "none"; //todo z index
+    document.getElementById("overlay").style.display = "none"
     init()
   } else {
 
@@ -185,7 +192,8 @@ async function leave_all_rooms() {
 
 async function leave_room(room_name) {
   let delete_fetch_url = delete_room_api_url + room_name + '/users'
-
+  console.log('delete_fetch_url')
+  console.log(delete_fetch_url)
   await fetch(delete_fetch_url, {
     method: 'delete',
     credentials: "include",
@@ -196,6 +204,7 @@ async function leave_room(room_name) {
       return
     })
     .catch(function (error) {
+      loading_error()
       console.log(error)
     })
 }
@@ -293,14 +302,9 @@ async function enter_chat(create_new_room) {
         get_user_in_rooms(room)
       })
       .catch(function (error) {
+        loading_error()
         console.log(error)
       });
-  } else {
-    //already in or created a new one
-    //todo enter _chat
-    //read_old_messages(room)
-    //get_user_in_rooms(room)
-    console.log('im doofen else')
   }
   document.querySelector("#chat_new").style.display = ''
 }
@@ -334,7 +338,7 @@ function format_users_in_room_html(room_name, user_data) {
       ul.append(li)
     }
     room_list_item.after(ul)
-  } 
+  }
   show_loading(false)
 }
 

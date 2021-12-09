@@ -20,7 +20,6 @@
         <button style="display:none" id="logged_in" onclick="display_login('','',true)">Gemacht :)</button>
       </div>
     </div>
-
     <!-- body-->
     <div id="container">
       <!-- menu left-->
@@ -31,11 +30,11 @@
         <div id="new_room_div">
           <ul>
             <li>
-              <label for="new_room" aria-hidden="true">new room name?<br />
+              <label for="new_room">enter a name for a new room<br />
                 <input type="text" name="new_room" id="new_room"></label> <!--  todo label -->
               <label for="new_room_btn" class="hidden">new room?<br />
-                <button type="submit" id="new_room_btn" onclick="create_new_room()"
-                  aria-hidden="true">add</button></label> <!--  todo label -->
+                <button type="submit" id="new_room_btn" onclick="create_new_room()">add</button></label>
+              <!--  todo label -->
             </li>
           </ul>
         </div>
@@ -73,7 +72,7 @@
     show_loading(true)
     await init()
 
-    document.getElementById("chat_history").innerHTML = '<p>' + labels.welcome + '</p>'
+    document.getElementById("chat_history").innerHTML = "<p>" + labels.welcome + "</p>"
 
     if (current_user) {
       show_loading(false)

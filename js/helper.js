@@ -31,3 +31,9 @@ function show_loading(show, text) {
     document.getElementById("overlay").style.display = "none";
   }
 }
+
+function loading_error() {
+  document.getElementById("overlay").style.display = "block"
+  document.getElementById("container").style.display = "none"
+  document.getElementById("login_info").innerHTML = '<p>sorry - should not happen :( <br/> better reload</p>' //labels.loading
+}
