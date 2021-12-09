@@ -6,6 +6,9 @@ here happens the logic for the chat client
 - create new room error
 - ' und "
 -- css änderung, wenn neue nachricht von user kommt (neben usernamen) 
+- was wenn aber "done" aber gelogen?
+- offline
+-----------------------------------------------------------------------------
 
 
   was hab ich gemacht
@@ -117,14 +120,17 @@ async function init() {
 }
 
 async function get_rooms() {
-  console.log('get_rooms')
+  // remove existing rooms
+  document.getElementById('rooms').innerHTML=''
+
+// get new ones
   let ul = document.createElement('ul')
   let rooms = await fetch(get_rooms_api_url, {
     credentials: "include",
   }).then(response => response.json());
 
+  // and make it "nice"
   for (let room of rooms) {
-    //li = create_room_html(room)
     let tmp = room.replace(/\s/g, "")
 
     let li = document.createElement("li")
@@ -136,13 +142,6 @@ async function get_rooms() {
     btn.addEventListener("click", enter_chat)
     li.appendChild(btn)
     ul.appendChild(li)
-  }
-
-  if (document.getElementById('rooms').childNodes.length > 1) {
-    console.log('too much')
-    document.getElementById('rooms').childNodes[1].remove()
-  }else{
-    console.log('ok')
   }
 
   document.getElementById('rooms').append(ul)
@@ -230,8 +229,8 @@ async function enter_chat(create_new_room) {
   // need for difference url room name
   room = this.value
 
-  if (current_chat != room || current_view === "user_chat") {
-
+  if (current_chat != room || current_view === "user_chat" || create_new_room) {
+    console.log('im guten if')
     show_loading(true)
 
     if (current_chat != "" && current_view == "room") {
@@ -243,11 +242,14 @@ async function enter_chat(create_new_room) {
     current_view = "room"
 
     if (create_new_room === true) {
+      document.getElementById('new_room').value
       enter_fetch_url = join_room_api_url + document.getElementById('new_room').value + '/users'
       room = document.getElementById('new_room').value
     } else {
       enter_fetch_url = join_room_api_url + room + '/users'
     }
+    console.log("enter_fetch_url")
+    console.log(enter_fetch_url)
     // enter new room
     await fetch(enter_fetch_url, {
       method: 'POST',
@@ -259,15 +261,21 @@ async function enter_chat(create_new_room) {
 
         if (resp.status == 200) {
           // you joined the room 
+          update_room_header(room)
+          clear_chat_window()
+          document.getElementById('chat_history').append(add_chat_window())
           read_old_messages(room)
         } else if (resp.status == 409) {
           console.log('room already exists')
         }
-
         else if (resp.status == 201) {
           room = document.getElementById('new_room').value
           current_room = document.getElementById('new_room').value
+          update_room_header(room)
+          clear_chat_window()
+          document.getElementById('chat_history').append(add_chat_window())
           console.log('room created')
+          get_rooms()
         }
 
         if (resp.status == 200 || resp.status == 201) {
@@ -287,17 +295,18 @@ async function enter_chat(create_new_room) {
       .catch(function (error) {
         console.log(error)
       });
-  }else{
+  } else {
     //already in or created a new one
     //todo enter _chat
-    read_old_messages(room)
-    get_user_in_rooms(room)
+    //read_old_messages(room)
+    //get_user_in_rooms(room)
+    console.log('im doofen else')
   }
   document.querySelector("#chat_new").style.display = ''
 }
 
 async function get_user_in_rooms(room_name) {
-  console.log('get_user_in_rooms: '+room_name )
+  console.log('get_user_in_rooms: ' + room_name)
   await fetch(revieve_user_in_room_api_url + room_name + '/users', {
     credentials: "include",
   })
@@ -325,11 +334,7 @@ function format_users_in_room_html(room_name, user_data) {
       ul.append(li)
     }
     room_list_item.after(ul)
-  } else {
-    // happens when you create a new room -todo
-    get_rooms()
-  }
-
+  } 
   show_loading(false)
 }
 
@@ -391,6 +396,7 @@ function send_message() {
           if (resp.status === 403) {
             alert("You are not a member of the room " + current_chat)
           } else {
+            clear_chat_window()
             read_old_messages(current_chat)
           }
           document.getElementById('chat_input').value = ''
@@ -403,10 +409,9 @@ function send_message() {
   }
 }
 
-async function read_old_messages(room) {
-  document.getElementById("chat_history").innerHTML = ''
-
-  // create room header -todo evtl auslagern
+function update_room_header(room) {
+  //TODO START CREATE HEADER
+  // muss auch bei create romm true ausgeführt werden
   if (document.getElementsByClassName('room_header')[0] !== undefined) {
     document.getElementsByClassName('room_header')[0].remove()
   }
@@ -416,12 +421,20 @@ async function read_old_messages(room) {
   header.innerHTML = '<h3>Room: ' + room + '</h3>' // todo als label
   header.classList.add("room_header")
   document.getElementById("chat").prepend(header)
+}
 
+function clear_chat_window() {
+  document.getElementById("chat_history").innerHTML = ''
+}
+
+function add_chat_window() {
+  console.log('add_chat_window')
   let div = document.createElement("div")
   div.classList.add("room_container")
+  return div
+}
 
-  document.getElementById('chat_history').append(div)
-
+async function read_old_messages(room) {
   let fetch_rooms_messages = get_message_for_room_api_url + room + "/messages"
   await fetch(fetch_rooms_messages, {
     credentials: "include",
@@ -478,7 +491,10 @@ async function format_message_in_chat(data) {
 
   if (typeof (data) === 'object') {
     // items for room chat
-    let chat_window = document.getElementsByClassName('room_container')[0]
+    document.getElementById("chat_history").innerHTML = ''
+    let chat_window = document.createElement("div")
+    chat_window.classList.add("room_container")
+    document.getElementById('chat_history').append(chat_window)
 
     for (let item in data) {
       let p = document.createElement("p")
@@ -573,9 +589,11 @@ function check_old_private_chats() {
 }
 
 function create_new_room() {
-  console.log('todo')
-  // darf net leer sein
-  console.log(document.getElementById('new_room').value)
-  enter_chat(true) //todo 
-  enter_chat()
+  if (document.getElementById('new_room').value !== "") {
+    enter_chat(true)
+  }
+  else {
+    alert("please inser a valid user") //todo
+  }
+
 }
