@@ -63,7 +63,6 @@ async function start_user_message_socket() {
 
   ws.onmessage = function (e) {
     let server_message = JSON.parse(e.data)
-    alert('server message from user' + server_message.user)
     add_li_to_privat_chat(server_message.user)
     store_chat_in_local_storage(server_message.user, server_message.user, server_message.message)
     activate_user_chat_window(server_message.user)
