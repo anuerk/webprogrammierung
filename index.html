@@ -2,18 +2,21 @@
 <html lang="en">
 
 <!-- todo
+  - wenn man user aus privaten chat auswählt -error
   - info wenn screen zu schmal
   - file formatierung und ausmisten und ordnen
-  - lade screen währen fetch - aber nur der spinner soll sich drehen, nicht der text :)
+  - create new room error
+
   - hatte fehler, als bei erstem aufruf leere arrays zurück kamen. evtl mal fest setzten und dann testen -
   - - > vermutlich wird room name auf undefined gesetzt und dieser raum dann beim erstellen angelegt
   - - > evtl noch bug, wenn zuerset 401 nicht angemeldet kommt 
-  - f5 ruhiger macher (menu flakkert)
+- private nachrichten für für dauer des session speichern
 - ' und "
 -- css änderung, wenn neue nachricht von user kommt (neben usernamen) 
-- "welcome screen"
+
 - join notifications nur innerhalb eines raums
 - wss wenn neue nachricht
+- macchnaml noch alte user liste unter altem raum
 
   was hab ich gemacht
   - erstmal protptyp (wie funktioniert was)
@@ -25,6 +28,7 @@
   - gründe für: 
       1. device flow user wird nicht zurück gegeben (änderung an api)
       2. logged in ist redundant, da ja header entsprechend zurückgegeben wird
+  
   - request bei raumwechsel:
           von adsdad
           1. 204 ???
@@ -48,7 +52,9 @@
   <title>Webprommierung</title>
   <link rel="stylesheet" href="css/style.css" />
   <script src="js/script.js"></script>
-  <script src="https://kit.fontawesome.com/54e3d558c8.js" crossorigin="anonymous"></script>
+  <script src="js/sockets.js"></script>
+  <script src="js/helper.js"></script>
+  <!--<script src="https://kit.fontawesome.com/54e3d558c8.js" crossorigin="anonymous"></script>-->
 </head>
 
 <body>
@@ -71,7 +77,7 @@
           <ul>
             <li>
               <input type="text" name="new_room" id="new_room">
-              <button value="add" class="fas fa-plus" aria-hidden="true">add</button>
+              <button value="add" aria-hidden="true">add</button>
             </li>
           </ul>
         </div>
@@ -92,7 +98,7 @@
           <label for="chat_input">chat:</label> <!--  todo label -->
           <textarea id="chat_input" name="chat_input" rows="4" cols="50"></textarea><br />
           <label for="chat_send">send your message</label> <!--  todo label -->
-          <button type="button" id="chat_send" onclick="send_message_in_room()">Send</button>
+          <button type="button" id="chat_send" onclick="send_message()">Send</button>
         </div>
       </div>
     </div>
