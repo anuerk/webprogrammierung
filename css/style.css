@@ -19,17 +19,18 @@ h3{
 
 .wrapper {
     display: flex;
-    flex-direction: column;
-    height: 100%;
-    min-height: 100%;
+    flex-direction: row;
+    /* height: 100%; */
+    max-height: 100%;
     overflow: hidden;
+    flex: 1;
 }
 
 #overlay {
   position: fixed;
   display: none;
   width: 100%;
-  height: 100%;
+  /* height: 100%; */
   top: 0;
   left: 0;
   right: 0;
@@ -46,6 +47,11 @@ h3{
 
 #menu{
     border: 1px solid black;
+    /* height: 100%; */
+    flex-direction: column;
+    flex-wrap: wrap;
+    display: flex;
+    flex: 1;
 }
 
 .header { 
@@ -107,8 +113,9 @@ h3{
     flex: 1;
     padding:5px;
     /* border: 1px solid black */
-    max-height: 50%;
+    /* height: 50%; */
     overflow-y: scroll;
+    display: flex;
 }
 
 #rooms li{
@@ -151,7 +158,7 @@ h3{
 
 /* style for the chat window*/
 #chat {
-    flex: 5;
+    flex: 3;
 }
 
 #chat_history li {
@@ -173,7 +180,9 @@ h3{
   }
 
   .room_header{
-      height: 5%;
+      border-bottom: 1px solid black;
+      height: 4%;
+      border-top: 1px solid black;
   }
   
   #chat_history p {
@@ -303,4 +312,8 @@ h3{
   @keyframes spin {
     0% {transform: rotate(0deg);}
     100% {transform: rotate(360deg);}
+  }
+  #private_chats li{
+      list-style-type:none;
+      padding-top: 1em;
   }

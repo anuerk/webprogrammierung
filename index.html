@@ -1,52 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<!-- todo
-  - wenn man user aus privaten chat auswählt -error
-  - info wenn screen zu schmal
-  - file formatierung und ausmisten und ordnen
-  - create new room error
-
-  - hatte fehler, als bei erstem aufruf leere arrays zurück kamen. evtl mal fest setzten und dann testen -
-  - - > vermutlich wird room name auf undefined gesetzt und dieser raum dann beim erstellen angelegt
-  - - > evtl noch bug, wenn zuerset 401 nicht angemeldet kommt 
-- private nachrichten für für dauer des session speichern
-- ' und "
--- css änderung, wenn neue nachricht von user kommt (neben usernamen) 
-
-- join notifications nur innerhalb eines raums
-- wss wenn neue nachricht
-- macchnaml noch alte user liste unter altem raum
-
-  was hab ich gemacht
-  - erstmal protptyp (wie funktioniert was)
-  - dann plan, was muss ich alles machen + implementierung des plans
-  - annahme: 
-      1. user darf nur in einem raum gleichzeitig sein (wäre auch anders gegangen)
-      2. es darf keinen raum mit dem namen "" (leer) geben
-  - erste überlegungungen für zusatzfunktionen: ba
-  - gründe für: 
-      1. device flow user wird nicht zurück gegeben (änderung an api)
-      2. logged in ist redundant, da ja header entsprechend zurückgegeben wird
-  
-  - request bei raumwechsel:
-          von adsdad
-          1. 204 ???
-          2. post in neuen raum
-          3. hole user in raum
-          4. starte alten websocket
-          5. verlasse alten raum
-          6. lese nachrichten im raum
-          7. starte message websocket
-          8. starte info websocket
-          nach anuerk
-
-
-
-          https://www.pluralsight.com/guides/handling-nested-http-requests-using-the-fetch-api
-
--->
-
 <head>
   <meta charset="UTF-8" />
   <title>Webprommierung</title>
@@ -90,15 +43,17 @@
       <!-- chat-->
       <div id="chat">
         <div id="chat_history">
-          <div id="room_header">           
+          <div id="room_header">
           </div>
         </div>
         <div id="chat_new">
           <hr>
-          <label for="chat_input">chat:</label> <!--  todo label -->
-          <textarea id="chat_input" name="chat_input" rows="4" cols="50"></textarea><br />
-          <label for="chat_send">send your message</label> <!--  todo label -->
-          <button type="button" id="chat_send" onclick="send_message()">Send</button>
+          <form>
+            <label for="chat_input">chat:</label> <!--  todo label -->
+            <textarea id="chat_input" name="chat_input" rows="4" cols="50"></textarea><br />
+            <label for="chat_send">send your message</label> <!--  todo label -->
+            <button type="button" id="chat_send" onclick="send_message()">Send</button>
+          </form>
         </div>
       </div>
     </div>
@@ -109,10 +64,10 @@
   (async () => {
     show_loading(true)
     await init()
-    
-    document.getElementById("chat_history").innerHTML =labels.welcome
-    
-    if(current_user){
+
+    document.getElementById("chat_history").innerHTML = labels.welcome
+
+    if (current_user) {
       show_loading(false)
     }
   })();

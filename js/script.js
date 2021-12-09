@@ -1,5 +1,47 @@
 /*
 here happens the logic for the chat client
+
+
+- join notifications nur innerhalb eines raums
+- wenn von einem user chat zu nächstem gewechselt wird - error
+- wss wenn neue nachricht
+  - info wenn screen zu schmal
+  - file formatierung und ausmisten und ordnen
+  - create new room error
+
+  - hatte fehler, als bei erstem aufruf leere arrays zurück kamen. evtl mal fest setzten und dann testen -
+  - - > vermutlich wird room name auf undefined gesetzt und dieser raum dann beim erstellen angelegt
+  - - > evtl noch bug, wenn zuerset 401 nicht angemeldet kommt 
+
+- ' und "
+-- css änderung, wenn neue nachricht von user kommt (neben usernamen) 
+
+
+
+  was hab ich gemacht
+  - erstmal protptyp (wie funktioniert was)
+  - dann plan, was muss ich alles machen + implementierung des plans
+  - annahme: 
+      1. user darf nur in einem raum gleichzeitig sein (wäre auch anders gegangen)
+      2. es darf keinen raum mit dem namen "" (leer) geben
+  - erste überlegungungen für zusatzfunktionen: ba
+  - gründe für: 
+      1. device flow user wird nicht zurück gegeben (änderung an api)
+      2. logged in ist redundant, da ja header entsprechend zurückgegeben wird
+  
+  - request bei raumwechsel:
+          von adsdad
+          1. 204 ???
+          2. post in neuen raum
+          3. hole user in raum
+          4. starte alten websocket
+          5. verlasse alten raum
+          6. lese nachrichten im raum
+          7. starte message websocket
+          8. starte info websocket
+          nach anuerk
+
+
 */
 const auth_api_url = "https://chatty.1337.cx/me/device_code"
 const get_rooms_api_url = "https://chatty.1337.cx/rooms"
@@ -78,6 +120,7 @@ async function init() {
     await leave_all_rooms()
     await start_user_message_socket()
     await get_rooms()
+    await check_old_private_chats()
   }
 
   return
@@ -174,7 +217,6 @@ async function leave_all_rooms() {
 }
 
 async function leave_room(room_name) {
-  console.log('you will leave to room ' + room_name)
   let delete_fetch_url = delete_room_api_url + room_name + '/users'
 
   await fetch(delete_fetch_url, {
@@ -197,11 +239,12 @@ function create_user_html(user) {
   let btn = document.createElement("button")
   btn.innerHTML = user
   btn.value = user
-  btn.classList.add(user);
-  btn.addEventListener('click', function (event) {
-    enter_user_chat(user)
-  });
-
+  btn.classList.add(user)
+  if (user != current_user) {
+    btn.addEventListener('click', function (event) {
+      enter_user_chat(user)
+    })
+  }
   li.appendChild(btn)
 
   return li
@@ -209,8 +252,7 @@ function create_user_html(user) {
 
 // wird aufgerufen bei room-button click
 async function enter_chat(create_new_room) {
-  //todo vergleiche fetch await mit login, dass loading mask tut :)
-  console.log('enter chat')
+  document.getElementById('chat_input').value = ''
 
   // initialize variables
   let enter_fetch_url = ""
@@ -220,14 +262,16 @@ async function enter_chat(create_new_room) {
   room = this.value
 
   if (current_chat != room || current_view === "user_chat") {
-    current_view = "room"
+
     show_loading(true)
-    if (current_chat != "") {
+
+    if (current_chat != "" && current_view == "room") {
       (async () => {
         await leave_room(current_chat)
       })();
 
     }
+    current_view = "room"
 
     if (create_new_room === true) {
       enter_fetch_url = join_room_api_url + document.getElementById('new_room').value + '/users'
@@ -244,30 +288,26 @@ async function enter_chat(create_new_room) {
       .then(function (resp) {
         current_chat = room
 
-        if (resp.status = 200) {
+        if (resp.status == 200) {
           // you joined the room 
           read_old_messages(room)
-          console.log('close websocket')
-          if (current_room_join_websocket !== undefined && current_room_join_websocket.readyState === 3) {
-            current_room_join_websocket.close()
-          }
-          if (current_room_message_websocket !== undefined && current_room_message_websocket.readyState === 3) {
-            current_room_message_websocket.close()
-          }
-
-          current_room_message_websocket = start_room_message_sockets(room)
-          current_room_join_websocket = start_room_join_sockets(room)
-
-        } else if (resp.status = 201) {
-          // you created and joined the room 
-          current_chat = document.getElementById('new_room').value
-          if (current_room_join_websocket !== undefined && current_room_join_websocket.readyState === 3) {
-            current_room_join_websocket.close()
-            current_room_message_websocket.close()
-          }
-          current_room_message_websocket = start_room_message_sockets(room)
-          current_room_join_websocket = start_room_join_sockets(room)
+        } else if (resp.status == 409) {
+          return;
         }
+
+        if (resp.status == 200 || resp.status == 201) {
+          if (current_room_join_websocket !== undefined && current_room_join_websocket.readyState === 1) {
+            current_room_join_websocket.close()
+          }
+          if (current_room_message_websocket !== undefined && current_room_message_websocket.readyState === 1) {
+            current_room_message_websocket.close()
+          }
+
+          current_room_message_websocket = start_room_message_sockets(room)
+          current_room_join_websocket = start_room_join_sockets(room)
+
+        }
+
 
         get_user_in_rooms(room)
         return
@@ -281,8 +321,6 @@ async function enter_chat(create_new_room) {
 }
 
 async function get_user_in_rooms(room_name) {
-  console.log('get_user_in_rooms: ' + room_name)
-
   await fetch(revieve_user_in_room_api_url + room_name + '/users', {
     credentials: "include",
   })
@@ -311,7 +349,7 @@ function format_users_in_room_html(room_name, user_data) {
     }
     room_list_item.after(ul)
   } else {
-    // happens when you create a new room
+    // happens when you create a new room -todo
     get_rooms()
   }
 
@@ -324,6 +362,13 @@ function send_message() {
     alert(labels.need_message)
   }
   else {
+
+    // escape message
+    let textarea_value = JSON.stringify(document.getElementById('chat_input').value);
+    let textarea_value_escaped = textarea_value //.replace(/\\n/g, "\\n")
+
+
+
     if (current_view === 'user_chat') {
       console.log('send to a user')
       let send_message_url = send_message_user_api_url + current_chat + '/messages'
@@ -333,13 +378,13 @@ function send_message() {
         headers: {
           'Content-Type': 'text/plain',
         },
-        body: document.getElementById('chat_input').value
+        body: textarea_value_escaped
       })
         .then(function (resp) {
           if (resp.status === 404) {
             alert(labels.user_offline)
           } else if (resp.status === 200) {
-            store_chat_in_local_storage(current_chat, current_user, document.getElementById('chat_input').value)
+            store_chat_in_local_storage(current_chat, current_user, textarea_value_escaped)
             format_message_in_chat(current_chat)
             document.getElementById('chat_input').value = ""
           }
@@ -358,11 +403,13 @@ function send_message() {
         headers: {
           'Content-Type': 'text/plain',
         },
-        body: document.getElementById('chat_input').value
+        body: textarea_value_escaped
       })
         .then(function (resp) {
           if (resp.status === 403) {
             alert("You are not a member of the room " + current_chat)
+          } else {
+            read_old_messages(current_chat)
           }
           document.getElementById('chat_input').value = ''
           return
@@ -399,9 +446,7 @@ async function read_old_messages(room) {
   })
     .then((resp) => resp.json())
     .then(function (data) {
-
       format_message_in_chat(data)
-
       return
     })
     .catch(function (error) {
@@ -410,16 +455,20 @@ async function read_old_messages(room) {
 }
 
 function enter_user_chat(user) {
-  console.log('enter user chat')
-  current_view = "user_chat"
+  if (current_view === "") {
+    alert("erst mal raum betreten bitte")
+  } else {
+    current_view = "user_chat"
 
-  leave_room(current_chat)
-  remove_old_user_list(current_chat)
+    leave_room(current_chat)
+    remove_old_user_list(current_chat)
 
-  document.getElementsByClassName('room_header')[0].innerHTML = '<h3>User: ' + user + '</h3>'
-  format_message_in_chat(user)
-  add_li_to_privat_chat(user)
-  current_chat = user
+    document.getElementsByClassName('room_header')[0].innerHTML = '<h3>User: ' + user + '</h3>'
+
+    format_message_in_chat(user)
+    add_li_to_privat_chat(user)
+    current_chat = user
+  }
 }
 
 function store_chat_in_local_storage(chat_partner, message_from, message) {
@@ -437,28 +486,30 @@ function store_chat_in_local_storage(chat_partner, message_from, message) {
 
 function format_message_in_chat(data) {
   // makes html elements which contains the chat messages 
-  // todo evtl ausmisten
 
   if (typeof (data) === 'object') {
     // items for room chat
     let chat_window = document.getElementsByClassName('room_container')[0]
 
-
     for (let item in data) {
       let p = document.createElement("p")
+      console.log('message_tmp 1')
+      console.log(data[item].message)
+
+      message_tmp = data[item].message.split("\n").join("<br />")
+      console.log('message_tmp 2')
+      console.log(message_tmp)
       if (data[item].user == current_user) {
         p.classList.add("from-me")
-        p.innerHTML = data[item].message
+        p.innerHTML = message_tmp
       } else {
         p.classList.add("from-them")
-        p.innerHTML = '<span class=user_name>' + data[item].user + '</span>: ' + data[item].message
+        p.innerHTML = '<span class=user_name>' + data[item].user + '</span>:<br/> ' + message_tmp
       }
 
       chat_window.append(p)
     }
   } else {
-
-
     document.getElementById("chat_history").innerHTML = ''
     let chat_window = document.createElement("div")
     chat_window.classList.add("user_chat_container")
@@ -467,15 +518,16 @@ function format_message_in_chat(data) {
     // items for user chat
     if (localStorage.getItem(data) !== null) {
       let chat_history = JSON.parse(localStorage.getItem(data))
-      //chat_window.
+   
       for (let i = 0; i < chat_history.length; i++) {
         let p = document.createElement("p")
+        message_tmp = chat_history[i].message.split("\n").join("<br />")
         if (chat_history[i].from_user == current_user) {
           p.classList.add("from-me")
-          p.innerHTML = chat_history[i].message
+          p.innerHTML = message_tmp
         } else {
           p.classList.add("from-them")
-          p.innerHTML = '<span class=user_name>' + chat_history[i].from_user + '</span>: ' + chat_history[i].message
+          p.innerHTML = '<span class=user_name>' + chat_history[i].from_user + '</span>:<br/> ' + message_tmp
         }
 
         chat_window.append(p)
@@ -495,19 +547,18 @@ function add_li_to_privat_chat(user) {
 
     btn.innerHTML = user
     btn.value = user
-    btn.classList.add(user);
+    btn.classList.add(user)
     btn.addEventListener('click', function (event) {
-      enter_user_chat(user);
+      enter_user_chat(user)
     });
     li.appendChild(btn)
     ul.appendChild(li)
-    ul.appendChild(li);
+    ul.appendChild(li)
   }
 }
 
 function remove_old_user_list(room) {
   //removes the html list for the users in the room
-
   let user_list_of_room = document.getElementsByClassName('user_list_item')
   for (var index = 0; index < user_list_of_room.length; index++) {
     user_list_of_room[index].remove()
@@ -521,4 +572,12 @@ function activate_user_chat_window(chat_partner) {
   document.getElementById("chat_history").innerHTML = ''
   document.getElementsByClassName("room_header")[0].innerHTML = '<h3>User: ' + chat_partner + '</h3>'
 
+}
+
+function check_old_private_chats() {
+  // adds existing private chats to the screen
+  for (let i = 0; i < localStorage.length; i++) {
+    storage = JSON.parse(localStorage.getItem(localStorage.key(i)))
+    add_li_to_privat_chat(storage[0].from_user)
+  }
 }
