@@ -4,6 +4,7 @@ here happens the logic for the chat client
 
 - join notifications nur innerhalb eines raums
 - wenn von einem user chat zu nächstem gewechselt wird - error
+- line break
 - wss wenn neue nachricht
   - info wenn screen zu schmal
   - file formatierung und ausmisten und ordnen
@@ -15,7 +16,6 @@ here happens the logic for the chat client
 
 - ' und "
 -- css änderung, wenn neue nachricht von user kommt (neben usernamen) 
-
 
 
   was hab ich gemacht
@@ -127,12 +127,6 @@ async function init() {
 }
 
 async function get_rooms() {
-  /*
-  baut gerade den inhalt des kompletten rooms divs auf
-  todo macht zu viel
-  */
-
-  document.getElementById('rooms').innerHTML = '<h2>' + labels.rooms + '</h2>'
   let ul = document.createElement('ul')
   let rooms = await fetch(get_rooms_api_url, {
     credentials: "include",
@@ -153,29 +147,7 @@ async function get_rooms() {
     ul.appendChild(li)
   }
 
-  let li = document.createElement("li")
-  let btn = document.createElement("button")
-  btn.innerHTML = labels.add
-  btn.value = labels.add
-  btn.addEventListener('click', function (event) {
-    enter_chat(true);
-  });
-  btn.classList.add("fas", "fa-plus")
 
-
-  // todo passt hier nicht hin
-  // create text input to create new room
-  let hr = document.createElement('hr');
-  let input = document.createElement('input');
-  input.setAttribute('type', 'text');
-  input.setAttribute('name', 'new_room');
-  input.setAttribute('id', 'new_room');
-
-
-  li.appendChild(input)
-  li.appendChild(btn)
-  li.appendChild(hr)
-  ul.appendChild(li)
 
   document.getElementById('rooms').append(ul)
 
@@ -362,14 +334,15 @@ function send_message() {
     alert(labels.need_message)
   }
   else {
-
-    // escape message
-    let textarea_value = JSON.stringify(document.getElementById('chat_input').value);
-    let textarea_value_escaped = textarea_value //.replace(/\\n/g, "\\n")
-
+    //todo
 
 
     if (current_view === 'user_chat') {
+      // escape message
+      let textarea_value = JSON.stringify(document.getElementById('chat_input').value);
+      let textarea_value_escaped = textarea_value //.replace(/\\n/g, "\\n")
+
+
       console.log('send to a user')
       let send_message_url = send_message_user_api_url + current_chat + '/messages'
       fetch(send_message_url, {
@@ -378,7 +351,7 @@ function send_message() {
         headers: {
           'Content-Type': 'text/plain',
         },
-        body: textarea_value_escaped
+        body: document.getElementById('chat_input').value
       })
         .then(function (resp) {
           if (resp.status === 404) {
@@ -403,7 +376,7 @@ function send_message() {
         headers: {
           'Content-Type': 'text/plain',
         },
-        body: textarea_value_escaped
+        body: document.getElementById('chat_input').value
       })
         .then(function (resp) {
           if (resp.status === 403) {
@@ -455,6 +428,7 @@ async function read_old_messages(room) {
 }
 
 function enter_user_chat(user) {
+  console.log('enter_user_chat')
   if (current_view === "") {
     alert("erst mal raum betreten bitte")
   } else {
@@ -493,10 +467,11 @@ function format_message_in_chat(data) {
 
     for (let item in data) {
       let p = document.createElement("p")
+
       console.log('message_tmp 1')
       console.log(data[item].message)
 
-      message_tmp = data[item].message.split("\n").join("<br />")
+      message_tmp = data[item].message.replace("\n", "<br />");//.split("\n").join("<br />")
       console.log('message_tmp 2')
       console.log(message_tmp)
       if (data[item].user == current_user) {
@@ -518,7 +493,7 @@ function format_message_in_chat(data) {
     // items for user chat
     if (localStorage.getItem(data) !== null) {
       let chat_history = JSON.parse(localStorage.getItem(data))
-   
+
       for (let i = 0; i < chat_history.length; i++) {
         let p = document.createElement("p")
         message_tmp = chat_history[i].message.split("\n").join("<br />")

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>Webprommierung</title>
@@ -22,11 +23,12 @@
 
     <!-- body-->
     <div id="container">
-      <!-- rooms-->
+      <!-- menu left-->
       <div id="menu">
-        <div id="rooms">
+        <div id="rooms_header">
           <h2>rooms</h2>
-          <hr>
+        </div>
+        <div id="new_room_div">
           <ul>
             <li>
               <input type="text" name="new_room" id="new_room">
@@ -34,13 +36,17 @@
             </li>
           </ul>
         </div>
+        <div id="rooms">
+        </div>
+        <div id="private_chats_header">
+          <h2>private chats</h2>
+        </div><!--  todo label -->
         <div id="private_chats">
-          <h2>private chats</h2><!--  todo label -->
           <ul class="private_chats_ul">
           </ul>
         </div>
       </div>
-      <!-- chat-->
+      <!-- content big -->
       <div id="chat">
         <div id="chat_history">
           <div id="room_header">

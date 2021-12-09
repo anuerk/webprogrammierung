@@ -81,7 +81,7 @@ h3{
     /* position: fixed; */
     /* left: 100px; */
     height: 63%;
-    flex: 1;
+    flex: 3;
     max-height: 300px;
     /* background-color: green; */
 }
@@ -94,6 +94,7 @@ h3{
     height: 20%;
     /* z-index: 0; */
     /* display: none; */
+    flex: 2;
 }
 
 #chat_new label{
@@ -159,6 +160,9 @@ h3{
 /* style for the chat window*/
 #chat {
     flex: 3;
+    flex-direction: column;
+    flex-wrap: wrap;
+    display: flex;
 }
 
 #chat_history li {
@@ -183,6 +187,7 @@ h3{
       border-bottom: 1px solid black;
       height: 4%;
       border-top: 1px solid black;
+      flex: 1;
   }
   
   #chat_history p {
@@ -317,3 +322,17 @@ h3{
       list-style-type:none;
       padding-top: 1em;
   }
+
+  #new_room_div li{
+    list-style-type: none;
+}
+
+#new_room_div ul{
+  padding-left: 1em;
+}
+
+#rooms_header, #private_chats_header{
+    border-top: 1px solid black;
+    padding: 5px;
+    text-decoration: underline;
+}
