@@ -7,7 +7,8 @@ html, body {
 
 h2 {
     font-size: 15px;
-    margin-top: 0;
+    /* margin-top: 0; */
+    margin: 0.25em;
 }
 
 h3{
@@ -70,7 +71,7 @@ h3{
 }
 
 #chat_history, #user_chat_container{
-    /* margin: 1em; */
+    margin: 1em;
     overflow: auto;
     /* height: 63%; */
     flex: 15;
@@ -102,19 +103,19 @@ h3{
 /* style for the left menu*/
 #rooms, #private_chats {
     flex: 1;
-    padding:5px;
+    /* padding:5px; */
     overflow-y: scroll;
     display: flex;
 }
 
 #rooms li{
     list-style-type: none;
-    padding-top: 5px;
-    left: 10px;
+    /* padding-top: 5px; */
+    /* left: 10px; */
 }
 
 #rooms ul{
-    padding-left: 0;
+    /* padding-left: 0; */
 }
 
 .user_in_room{
@@ -123,7 +124,7 @@ h3{
     font-size: 1em;
 }
 
-#rooms button{
+#rooms button, #private_chats button{
     width: 100%;
     background-color: #fff;
     border:1px solid #000;
@@ -131,7 +132,7 @@ h3{
 
 #rooms .user_list_item button{
     width: 75%;
-    margin-left: 25%;
+    /* margin-left: 25%; */
     background-color: lightgrey;
     border:1px solid #000;
 }
@@ -146,7 +147,7 @@ h3{
 
 /* style for the chat window*/
 #chat {
-    flex: 3;
+    flex: 2;
     flex-direction: column;
     flex-wrap: wrap;
     display: flex;
@@ -315,9 +316,9 @@ h3{
     0% {transform: rotate(0deg);}
     100% {transform: rotate(360deg);}
   }
-  #private_chats li{
+  #menu li{
       list-style-type:none;
-      padding-top: 1em;
+      padding-top: 0.25em;
   }
 
   #new_room_div li{
@@ -330,7 +331,7 @@ h3{
 
 #rooms_header, #private_chats_header{
     border-top: 1px solid black;
-    padding: 5px;
+    /* padding: 5px; */
     text-decoration: underline;
 }
 
@@ -341,4 +342,8 @@ label{
 .hidden{
      /* display:none; */
      color: white;
+}
+
+#new_room_div{
+    border-bottom:1px solid black
 }

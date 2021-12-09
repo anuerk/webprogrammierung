@@ -1,17 +1,9 @@
 /*
 here happens the logic for the chat client
 
-- enter room mit leerzeichen
-
-- wss wenn neue nachricht
-- info wenn screen zu schmal
+- enter room mit leerzeichen 
 - file formatierung und ausmisten und ordnen
 - create new room error
-
-- hatte fehler, als bei erstem aufruf leere arrays zurück kamen. evtl mal fest setzten und dann testen -
-- - > vermutlich wird room name auf undefined gesetzt und dieser raum dann beim erstellen angelegt
-- - > evtl noch bug, wenn zuerset 401 nicht angemeldet kommt 
-
 - ' und "
 -- css änderung, wenn neue nachricht von user kommt (neben usernamen) 
 
@@ -38,6 +30,7 @@ here happens the logic for the chat client
           7. starte message websocket
           8. starte info websocket
           nach anuerk
+  - get users -> auskommentiert, weil ja eigetnlich nutzlo
 
 
 */
@@ -124,6 +117,7 @@ async function init() {
 }
 
 async function get_rooms() {
+  console.log('get_rooms')
   let ul = document.createElement('ul')
   let rooms = await fetch(get_rooms_api_url, {
     credentials: "include",
@@ -144,7 +138,12 @@ async function get_rooms() {
     ul.appendChild(li)
   }
 
-
+  if (document.getElementById('rooms').childNodes.length > 1) {
+    console.log('too much')
+    document.getElementById('rooms').childNodes[1].remove()
+  }else{
+    console.log('ok')
+  }
 
   document.getElementById('rooms').append(ul)
 
@@ -221,6 +220,7 @@ function create_user_html(user) {
 
 // wird aufgerufen bei room-button click
 async function enter_chat(create_new_room) {
+  console.log('enter_chat')
   document.getElementById('chat_input').value = ''
 
   // initialize variables
@@ -248,7 +248,6 @@ async function enter_chat(create_new_room) {
     } else {
       enter_fetch_url = join_room_api_url + room + '/users'
     }
-
     // enter new room
     await fetch(enter_fetch_url, {
       method: 'POST',
@@ -256,13 +255,19 @@ async function enter_chat(create_new_room) {
     })
       .then(function (resp) {
         current_chat = room
+        console.log(resp.status)
 
         if (resp.status == 200) {
           // you joined the room 
           read_old_messages(room)
-
         } else if (resp.status == 409) {
-          return;
+          console.log('room already exists')
+        }
+
+        else if (resp.status == 201) {
+          room = document.getElementById('new_room').value
+          current_room = document.getElementById('new_room').value
+          console.log('room created')
         }
 
         if (resp.status == 200 || resp.status == 201) {
@@ -274,7 +279,6 @@ async function enter_chat(create_new_room) {
           }
           current_room_message_websocket = start_room_message_sockets(room)
           current_room_join_websocket = start_room_join_sockets(room)
-
         }
 
 
@@ -283,11 +287,17 @@ async function enter_chat(create_new_room) {
       .catch(function (error) {
         console.log(error)
       });
+  }else{
+    //already in or created a new one
+    //todo enter _chat
+    read_old_messages(room)
+    get_user_in_rooms(room)
   }
   document.querySelector("#chat_new").style.display = ''
 }
 
 async function get_user_in_rooms(room_name) {
+  console.log('get_user_in_rooms: '+room_name )
   await fetch(revieve_user_in_room_api_url + room_name + '/users', {
     credentials: "include",
   })
@@ -329,9 +339,6 @@ function send_message() {
     alert(labels.need_message)
   }
   else {
-    //todo
-
-
     if (current_view === 'user_chat') {
       // escape message
       let textarea_value = JSON.stringify(document.getElementById('chat_input').value);
@@ -551,9 +558,9 @@ function activate_user_chat_window(chat_partner) {
   document.getElementById("chat_history").innerHTML = ''
   if (document.getElementsByClassName("room_header")[0] !== undefined) {
     document.getElementsByClassName("room_header")[0].innerHTML = '<h3>User: ' + chat_partner + '</h3>'
-  }else{
+  } else {
     // initialize if current user has just logged in - todo
-   alert('user tried to contact you - please enter a room :) or fix the source code ;)')
+    alert('user tried to contact you - please enter a room :) or fix the source code ;)')
   }
 }
 
@@ -567,4 +574,8 @@ function check_old_private_chats() {
 
 function create_new_room() {
   console.log('todo')
+  // darf net leer sein
+  console.log(document.getElementById('new_room').value)
+  enter_chat(true) //todo 
+  enter_chat()
 }

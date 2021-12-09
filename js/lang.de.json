@@ -6,5 +6,5 @@
   "user_offline" : "Benutzer ist derzeit nicht verfügbar",
   "message_sent" : "Nachricht gesendet",
   "welcome": "Hallo </br> links gibt es Räume - wähle einen aus oder lege einen neuen an :)",
-  "welcome": "wird geladen"
+  "loading": "wird geladen"
 }
