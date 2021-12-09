@@ -89,7 +89,6 @@ async function get_rooms() {
   todo macht zu viel
   */
 
-
   document.getElementById('rooms').innerHTML = '<h2>' + labels.rooms + '</h2>'
   let ul = document.createElement('ul')
   let rooms = await fetch(get_rooms_api_url, {
@@ -154,28 +153,9 @@ function display_login(url, code, hide) { // todo tausche true false
 
 }
 
-function show_loading(show, text) {
-  if (show === true) {
-    document.getElementById("overlay").style.display = "block"
-    document.getElementById("container").style.display = "none"
-
-    if (typeof (text) !== undefined) {
-      let spinner = document.createElement("div")
-      spinner.classList.add('loading_spinner')
-      if (current_user) {
-        document.getElementById("login_info").innerHTML = '<p>site is loading...</p>' //labels.loading
-        document.getElementById("login_info").append(spinner)
-      }
-    }
-  } else {
-    document.getElementById("container").style.display = "flex"
-    document.getElementById("overlay").style.display = "none";
-  }
-}
-
 async function leave_all_rooms() {
   // will be called by initial
-  
+
   await fetch(leave_room_api_url + current_user + '/rooms', {
     credentials: "include",
   })
@@ -210,19 +190,6 @@ async function leave_room(room_name) {
       console.log(error)
     })
 }
-
-/*
-function create_room_html(room) {
-  let li = document.createElement("li")
-  let btn = document.createElement("button")
-  btn.innerHTML = room
-  btn.value = room
-  btn.classList.add(room);
-  btn.addEventListener("click", enter_chat)
-  li.appendChild(btn)
-
-  return li
-}*/
 
 function create_user_html(user) {
   let li = document.createElement("li")
@@ -264,9 +231,7 @@ async function enter_chat(create_new_room) {
 
     if (create_new_room === true) {
       enter_fetch_url = join_room_api_url + document.getElementById('new_room').value + '/users'
-      console.log('jetzt wird der room gesetzt')
       room = document.getElementById('new_room').value
-      console.log('room (neu): ' + room)
     } else {
       enter_fetch_url = join_room_api_url + room + '/users'
     }
@@ -354,8 +319,6 @@ function format_users_in_room_html(room_name, user_data) {
 }
 
 function send_message() {
-  console.log('partner')
-  console.log(current_chat)
 
   if (document.getElementById('chat_input').value.length === 0) {
     alert(labels.need_message)
@@ -427,8 +390,6 @@ async function read_old_messages(room) {
 
   let div = document.createElement("div")
   div.classList.add("room_container")
-
-
 
   document.getElementById('chat_history').append(div)
 
