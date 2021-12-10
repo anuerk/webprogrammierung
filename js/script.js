@@ -542,7 +542,7 @@ function activate_user_chat_window(chat_partner) {
 
   document.getElementById("chat_history").innerHTML = ''
   if (document.getElementsByClassName("room_header")[0] !== undefined) {
-    document.getElementsByClassName("room_header")[0].innerHTML = '<h3>' + lables.header_user + chat_partner + '</h3>'
+    document.getElementsByClassName("room_header")[0].innerHTML = '<h3>' + labels.header_user + chat_partner + '</h3>'
   } else {
     // initialize if current user has just logged in
     alert(labels.message_but_problem)
