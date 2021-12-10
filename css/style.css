@@ -179,7 +179,8 @@ html,body {
   }
   
   #chat_new textarea {
-  width:auto
+  width:auto;
+  /* margin: 1em; */
   }
   
   .user_name {

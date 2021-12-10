@@ -478,6 +478,8 @@ async function format_message_in_chat(data) {
         chat_window.append(p)
       }
     }
+    document.getElementsByClassName("room_container")[0].scrollTop = document.getElementsByClassName("room_container")[0].scrollHeight
+ 
   } else {
     document.getElementById("chat_history").innerHTML = ''
     let chat_window = document.createElement("div")
