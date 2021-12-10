@@ -35,7 +35,7 @@ function change_favicon(notify) {
     link.rel = 'icon'
     document.getElementsByTagName('head')[0].appendChild(link)
   }
-  if (notify) {
+  if (notify && document.visibilityState !== "visible") {
     link.href = 'img/notify.ico'
   } else {
     link.href = 'img/favicon.ico'
