@@ -16,7 +16,7 @@ function start_room_join_sockets(room_name) {
       p.innerHTML = server_message.user + ' ' + server_message.type
       p.classList.add("room_info")
       document.getElementsByClassName("room_container")[0].append(p)
-
+      change_favicon(true)
       //scroll to end
       document.getElementsByClassName("room_container")[0].scrollTop = document.getElementsByClassName("room_container")[0].scrollHeight
     }
@@ -31,6 +31,7 @@ function start_room_message_sockets(room_name) {
 
   ws.onmessage = function (e) {
     read_old_messages(current_chat)
+    change_favicon(true)
     return
   }
   return ws
@@ -49,6 +50,7 @@ function start_user_message_socket() {
     store_chat_in_local_storage(server_message.user, server_message.user, server_message.message)
     activate_user_chat_window(server_message.user)
     format_message_in_chat(server_message.user)
+    change_favicon(true)
     return
   }
 }

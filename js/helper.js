@@ -11,7 +11,7 @@ function show_loading(show, text) {
     if (typeof (text) !== undefined) {
       let spinner = document.createElement("div")
       spinner.classList.add("loading_spinner")
-      document.getElementById("login_info").innerHTML = "<p>Site is loading</p>" 
+      document.getElementById("login_info").innerHTML = "<p>Site is loading</p>"
       document.getElementById("login_info").append(spinner)
 
     }
@@ -26,3 +26,22 @@ function loading_error() {
   document.getElementById("container").style.display = "none"
   document.getElementById("login_info").innerHTML = "<p>" + labels.bad_error + "</p>"
 }
+
+// change favicon when user is not active in tab but there are new notifications
+function change_favicon(notify) {
+  var link = document.querySelector("link[rel~='icon']")
+  if (!link) {
+    link = document.createElement('link')
+    link.rel = 'icon'
+    document.getElementsByTagName('head')[0].appendChild(link)
+  }
+  if (notify) {
+    link.href = 'img/notify.ico'
+  } else {
+    link.href = 'img/favicon.ico'
+  }
+}
+
+window.onfocus = function() {
+  change_favicon(false) 
+};

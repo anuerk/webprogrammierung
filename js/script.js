@@ -270,7 +270,6 @@ async function enter_chat(create_new_room) {
           current_room_join_websocket = start_room_join_sockets(room)
         }
 
-
         get_user_in_rooms(room)
       })
       .catch(function (error) {
@@ -479,7 +478,7 @@ async function format_message_in_chat(data) {
       }
     }
     document.getElementsByClassName("room_container")[0].scrollTop = document.getElementsByClassName("room_container")[0].scrollHeight
- 
+
   } else {
     document.getElementById("chat_history").innerHTML = ''
     let chat_window = document.createElement("div")

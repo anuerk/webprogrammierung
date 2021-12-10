@@ -66,16 +66,23 @@
 </body>
 
 <script>
-  (async () => {
-    show_loading(true)
-    await init()
 
-    document.getElementById("chat_history").innerHTML = "<p>" + labels.welcome + "</p>"
+  let link = document.querySelector("link[rel~='icon']")
+  link = document.createElement('link');
+  link.rel = 'icon';
+  document.getElementsByTagName('head')[0].appendChild(link);
+  link.href = 'img/favicon.ico';
 
-    if (current_user) {
-      show_loading(false)
-    }
-  })();
+    (async () => {
+      show_loading(true)
+      await init()
+
+      document.getElementById("chat_history").innerHTML = "<p>" + labels.welcome + "</p>"
+
+      if (current_user) {
+        show_loading(false)
+      }
+    })();
 </script>
 
 </html>
