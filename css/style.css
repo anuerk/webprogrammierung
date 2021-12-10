@@ -242,13 +242,13 @@ html,body {
   
   p.from-me {
   align-self:flex-end;
-  background-color:#248bf5;
+  background-color:#000;
   color:#fff
   }
   
   p.from-me::before {
   border-bottom-left-radius:.8rem .7rem;
-  border-right:1rem solid #248bf5;
+  border-right:1rem solid #000;
   right:-.35rem;
   transform:translate(0,-0.1rem)
   }

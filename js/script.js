@@ -52,8 +52,7 @@ async function init() {
   show_loading(true)
   let logged_in = false
   await fetch(auth_api_url, {
-    credentials: "include",
-    mode: "cors",
+    credentials: "include"
   })
     .then(function (resp) {
       if (resp.status == 401) {
