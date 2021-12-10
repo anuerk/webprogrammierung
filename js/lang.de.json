@@ -20,12 +20,12 @@
   "insert_value": "Bitte einen Namen eingeben",
   "done": "Gemacht",
   "room_info_text": "unten finden sie die existierenden Räume. Auf einen klicken um ihn zu betreten",
-  "label_login_btn" : "label login button",
-  "label_chat_text" : "Chat:",
+  "label_login_btn": "label login button",
+  "label_chat_text": "Chat:",
   "label_chat_send": "Sende deine Nachricht ab ",
   "chat_send": "Senden",
   "label_new_room_txt": "Betrete einen Raum oder lege einen neuen an",
   "label_new_room_button": "Neuen Raum anlegen?",
   "new_room_btn": "Hinzufügen",
-  "bad_error" : "Ooops - das sollte nicht passieren :( <br/> bitte neuladen"
+  "bad_error": "Ooops - das sollte nicht passieren :( <br/> bitte neuladen"
 }

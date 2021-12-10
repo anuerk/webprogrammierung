@@ -20,12 +20,12 @@
   "insert_value": "please insert a valid name",
   "done": "done",
   "room_info_text": "below you can find all existing rooms. Click on one to enter it",
-  "label_login_btn" : "label login button",
-  "label_chat_text" : "Chat:",
+  "label_login_btn": "label login button",
+  "label_chat_text": "Chat:",
   "label_chat_send": "Send your message ",
   "chat_send": "Send",
   "label_new_room_txt": "Enter a name for a new room",
   "label_new_room_button": "new room?",
   "new_room_btn": "add",
-  "bad_error" : "sorry - should not happen :( <br/> better reload"
+  "bad_error": "sorry - should not happen :( <br/> better reload"
 }

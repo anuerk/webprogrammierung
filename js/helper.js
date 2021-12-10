@@ -42,7 +42,7 @@ function change_favicon(notify) {
   }
 }
 
-window.onfocus = function() {
+window.onfocus = function () {
   // here can be more infos added 
-  change_favicon(false) 
+  change_favicon(false)
 };

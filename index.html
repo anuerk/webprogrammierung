@@ -73,16 +73,16 @@
   document.getElementsByTagName('head')[0].appendChild(link);
   link.href = 'img/favicon.ico';
 
-    (async () => {
-      show_loading(true)
-      await init()
+  (async () => {
+    show_loading(true)
+    await init()
 
-      document.getElementById("chat_history").innerHTML = "<p>" + labels.welcome + "</p>"
+    document.getElementById("chat_history").innerHTML = "<p>" + labels.welcome + "</p>"
 
-      if (current_user) {
-        show_loading(false)
-      }
-    })();
+    if (current_user) {
+      show_loading(false)
+    }
+  })();
 </script>
 
 </html>
