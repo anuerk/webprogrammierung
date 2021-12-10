@@ -1,6 +1,7 @@
 function start_room_join_sockets(room_name) {
   //Receive new joins and leaves 
-  let socket_room_joins = new WebSocket(socket_room_joins_api_url + room_name + "/users")
+
+  let socket_room_joins = new WebSocket(socket_room_joins_api_url + encodeURIComponent(room_name) + "/users")
 
   socket_room_joins.onmessage = function (e) {
     let server_message = JSON.parse(e.data)
@@ -13,14 +14,11 @@ function start_room_join_sockets(room_name) {
       document.getElementsByClassName("room_container")[0]
       let p = document.createElement("p")
       p.innerHTML = server_message.user + ' ' + server_message.type
-      p.classList.add("room_info");
+      p.classList.add("room_info")
       document.getElementsByClassName("room_container")[0].append(p)
 
       //scroll to end
-      document.getElementsByClassName("room_container")[0].scrollTop = document.getElementsByClassName("room_container")[0].scrollHeight;
-
-    } else {
-      console.log('neuigkeiten aber wurst')
+      document.getElementsByClassName("room_container")[0].scrollTop = document.getElementsByClassName("room_container")[0].scrollHeight
     }
     return
   }
@@ -29,12 +27,9 @@ function start_room_join_sockets(room_name) {
 
 function start_room_message_sockets(room_name) {
   //Receive new messages for a room
-  let ws = new WebSocket(socket_room_message_api_url + room_name + "/messages")
+  let ws = new WebSocket(socket_room_message_api_url + encodeURIComponent(room_name) + "/messages")
 
   ws.onmessage = function (e) {
-    let server_message = JSON.parse(e.data)
-    console.log('room_message')
-    console.log(server_message)
     read_old_messages(current_chat)
     return
   }
@@ -46,9 +41,10 @@ function start_user_message_socket() {
   let ws = new WebSocket("wss://chatty.1337.cx/me/messages")
 
   ws.onmessage = function (e) {
+    if (current_view === "room") {
+      leave_room(current_chat)
+    }
     let server_message = JSON.parse(e.data)
-    console.log('socke von user')
-    console.log(server_message)
     add_li_to_privat_chat(server_message.user)
     store_chat_in_local_storage(server_message.user, server_message.user, server_message.message)
     activate_user_chat_window(server_message.user)

@@ -3,12 +3,11 @@
 
 <head>
   <meta charset="UTF-8" />
-  <title>Webprommierung</title>
+  <title>Chat</title>
   <link rel="stylesheet" href="css/style.css" />
   <script src="js/script.js"></script>
   <script src="js/sockets.js"></script>
   <script src="js/helper.js"></script>
-  <!--<script src="https://kit.fontawesome.com/54e3d558c8.js" crossorigin="anonymous"></script>-->
 </head>
 
 <body>
@@ -16,8 +15,9 @@
   <div class="wrapper">
     <!-- will be displayed if user is not logged in-->
     <div id="overlay">
-      <div id="login_info"><br />
-        <button style="display:none" id="logged_in" onclick="display_login('','',true)">Gemacht :)</button>
+      <div id="login_info">
+        <label for="chat_send" id="label_login_btn"></label>
+        <button style="display:none" id="logged_in" onclick="display_login('','',true)"></button>
       </div>
     </div>
     <!-- body-->
@@ -25,24 +25,22 @@
       <!-- menu left-->
       <div id="menu">
         <div id="rooms_header">
-          <h2>rooms</h2>
         </div>
         <div id="new_room_div">
-          <ul>
-            <li>
-              <label for="new_room">enter a name for a new room<br />
-                <input type="text" name="new_room" id="new_room"></label> <!--  todo label -->
-              <label for="new_room_btn" class="hidden">new room?<br />
-                <button type="submit" id="new_room_btn" onclick="create_new_room()">add</button></label>
-              <!--  todo label -->
-            </li>
-          </ul>
+          <p>
+            <label for="new_room" id="lable_new_room_txt"></label>
+            <input type="text" name="new_room" id="new_room">
+          </p>
+          <p>
+            <button type="submit" id="new_room_btn" onclick="create_new_room()"></button>
+            <label for="new_room_btn" class="hidden" id="label_new_room_button"></label>
+          </p>
         </div>
+        <div id="rooms_info_text"></div>
         <div id="rooms">
         </div>
         <div id="private_chats_header">
-          <h2>private chats</h2>
-        </div><!--  todo label -->
+        </div>
         <div id="private_chats">
           <ul class="private_chats_ul">
           </ul>
@@ -56,17 +54,17 @@
         </div>
         <div id="chat_new">
           <form>
-            <label for="chat_input">chat:</label> <!--  todo label -->
+            <label for="chat_input" id="label_chat_text"></label>
             <textarea id="chat_input" name="chat_input" rows="4" cols="50"></textarea><br />
-            <label for="chat_send">send your message</label> <!--  todo label -->
-            <button type="button" id="chat_send" onclick="send_message()">Send</button>
+            <label for="chat_send" id="label_chat_send"></label>
+            <button type="button" id="chat_send" onclick="send_message()"></button>
           </form>
         </div>
       </div>
     </div>
   </div>
 </body>
-<!-- todo only if logged in -->
+
 <script>
   (async () => {
     show_loading(true)
