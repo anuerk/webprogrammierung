@@ -224,7 +224,8 @@ html,body {
   line-height:1.25;
   padding:.5rem .875rem;
   position:relative;
-  word-wrap:break-word
+  word-wrap:break-word;
+  max-width: 200px;
   }
   
   #chat_history .room_info {

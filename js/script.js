@@ -453,7 +453,7 @@ function store_chat_in_local_storage(chat_partner, message_from, message) {
 
 async function format_message_in_chat(data) {
   // makes html elements which contains the chat messages 
-
+  let msg_width = window.outerWidth * 0.2
   if (typeof (data) === 'object') {
     // items for room chat
     document.getElementById("chat_history").innerHTML = ''
@@ -463,7 +463,7 @@ async function format_message_in_chat(data) {
 
     for (let item in data) {
       let p = document.createElement("p")
-
+      //p.style.width = msg_width + 'px'
       if (data[item].message !== null) {
         message_tmp = data[item].message.replace("\n", "<br />")//.split("\n").join("<br />")
         if (data[item].user == current_user) {
@@ -490,6 +490,7 @@ async function format_message_in_chat(data) {
 
       for (let i = 0; i < chat_history.length; i++) {
         let p = document.createElement("p")
+        p.style.width = msg_width + 'px'
         message_tmp = chat_history[i].message.split("\n").join("<br />")
         if (chat_history[i].from_user == current_user) {
           p.classList.add("from-me")

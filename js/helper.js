@@ -45,4 +45,14 @@ function change_favicon(notify) {
 window.onfocus = function () {
   // here can be more infos added 
   change_favicon(false)
-};
+}
+
+observer = new MutationObserver(function(mutations) {
+  if (document.contains(document.contains(document.getElementsByClassName("room_container")[0]))) {
+       console.log("It's in the DOM!")
+       //observer.disconnect()
+   }
+   else{
+     console.log('asdas')
+   }
+})
