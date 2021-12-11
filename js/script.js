@@ -511,20 +511,23 @@ async function format_message_in_chat(data) {
 function add_li_to_privat_chat(user) {
   // only if not already in the list
   if (document.getElementById('private_chats').getElementsByClassName(user).length === 0) {
-    let ul = document.getElementsByClassName('private_chats_ul')[0]
-    let li = document.createElement("li")
-    let btn = document.createElement("button")
+    if (user != current_user) {
+      let ul = document.getElementsByClassName('private_chats_ul')[0]
+      let li = document.createElement("li")
+      let btn = document.createElement("button")
 
-    btn.innerHTML = user
-    btn.value = user
-    btn.classList.add(user)
-    btn.addEventListener('click', function (event) {
-      enter_user_chat(user)
-    })
-    li.appendChild(btn)
-    ul.appendChild(li)
-    ul.appendChild(li)
+      btn.innerHTML = user
+      btn.value = user
+      btn.classList.add(user)
+      btn.addEventListener('click', function (event) {
+        enter_user_chat(user)
+      })
+      li.appendChild(btn)
+      ul.appendChild(li)
+      ul.appendChild(li)
+    }
   }
+
 }
 
 function remove_old_user_list(room) {
