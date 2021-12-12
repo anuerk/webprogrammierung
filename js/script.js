@@ -321,15 +321,6 @@ function send_message() {
     if (current_view === 'user_chat') {
       // escape message to store the json in localstorage
       let textarea_value = JSON.stringify(document.getElementById('chat_input').value)
-      let textarea_value_escaped = textarea_value.replace(/\\n/g, "\\n")
-        .replace(/\\'/g, "\\'")
-        .replace(/\\"/g, '\\"')
-        .replace(/\\&/g, "\\&")
-        .replace(/\\r/g, "\\r")
-        .replace(/\\t/g, "\\t")
-        .replace(/\\b/g, "\\b")
-        .replace(/\\f/g, "\\f")
-
 
       // send to a user
       let send_message_url = send_message_user_api_url + encodeURIComponent(current_chat) + '/messages'
@@ -345,7 +336,7 @@ function send_message() {
           if (resp.status === 404) {
             alert(labels.user_offline)
           } else if (resp.status === 200) {
-            store_chat_in_local_storage(current_chat, current_user, textarea_value_escaped)
+            store_chat_in_local_storage(current_chat, current_user, document.getElementById('chat_input').value)
             format_message_in_chat(current_chat)
             document.getElementById('chat_input').value = ""
           }
@@ -447,16 +438,14 @@ function enter_user_chat(user) {
 function store_chat_in_local_storage(chat_partner, message_from, message) {
   // stores the direct messages in localstorage
   if (localStorage.getItem(chat_partner) === null) { // first message from a user     
-    let text = '[{ "from_user":"' + message_from + '"  , "message":"' + addslashes(message) + '" }]'
+    let text = '[{ "from_user":"' + message_from + '"  , "message":"' + message + '" }]'
     localStorage.setItem(chat_partner, text)
   } else {
-    let text = '{ "from_user":"' + message_from + '"  , "message":"' + addslashes(message) + '" }'
-    let old_messages = JSON.parse(localStorage.getItem(chat_partner))
-    console.log('probleme')
-    console.log(text)
-    //console.log(JSON.parse(text))
-    old_messages.push(text)
-    localStorage.setItem(chat_partner, JSON.stringify(old_messages))
+    let old_messages = localStorage.getItem(chat_partner)
+    old_json = JSON.parse(old_messages)
+    old_json.push({ "from_user": message_from, "message": message });
+
+    localStorage.setItem(chat_partner, JSON.stringify(old_json))
   }
 }
 
@@ -501,11 +490,10 @@ async function format_message_in_chat(data) {
       for (let i = 0; i < chat_history.length; i++) {
         let p = document.createElement("p")
         p.style.width = msg_width + 'px'
-        if (chat_history[i].message !== undefined) { //todo escape specail chars
-          message_tmp = chat_history[i].message.split("\n").join("<br />")
+        if (chat_history[i].message !== undefined) { 
+          message_tmp = chat_history[i].message //7.split("\n").join("<br />")
           if (chat_history[i].from_user == current_user) {
             p.classList.add("from-me")
-            message_tmp = message_tmp.substring(1, message_tmp.length - 1)
             p.innerHTML = message_tmp
           } else {
             p.classList.add("from-them")

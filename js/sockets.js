@@ -46,9 +46,10 @@ function start_user_message_socket() {
       leave_room(current_chat)
     }
     let server_message = JSON.parse(e.data)
-    add_li_to_privat_chat(server_message.user)
+    
     store_chat_in_local_storage(server_message.user, server_message.user, server_message.message)
     activate_user_chat_window(server_message.user)
+    add_li_to_privat_chat(server_message.user)
     format_message_in_chat(server_message.user)
     change_favicon(true)
     return
