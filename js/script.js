@@ -454,8 +454,8 @@ function store_chat_in_local_storage(chat_partner, message_from, message) {
     let old_messages = JSON.parse(localStorage.getItem(chat_partner))
     console.log('probleme')
     console.log(text)
-    console.log(JSON.parse(text))
-    old_messages.push(JSON.parse(text))
+    //console.log(JSON.parse(text))
+    old_messages.push(text)
     localStorage.setItem(chat_partner, JSON.stringify(old_messages))
   }
 }
