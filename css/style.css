@@ -209,7 +209,7 @@ html,body {
   overflow-x:hidden;
   border-radius:.25rem;
   display:flex;
-  flex-direction:column
+  flex-direction: column;
   }
   
   .room_header {

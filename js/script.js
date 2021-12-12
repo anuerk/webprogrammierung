@@ -291,6 +291,8 @@ async function get_user_in_rooms(room_name) {
     .catch(function (error) {
       console.log(error)
     })
+  scroll_to_end()
+
 }
 
 function format_users_in_room_html(room_name, user_data) {
@@ -412,11 +414,15 @@ async function read_old_messages(room) {
     .then((resp) => resp.json())
     .then(function (data) {
       format_message_in_chat(data)
+      //todo
+      //document.getElementsByClassName("room_container")[0].scrollTop = document.getElementsByClassName("room_container")[0].scrollHeight
+
       return
     })
     .catch(function (error) {
       console.log(error)
     })
+
 }
 
 function enter_user_chat(user) {
@@ -446,6 +452,9 @@ function store_chat_in_local_storage(chat_partner, message_from, message) {
   } else {
     let text = '{ "from_user":"' + message_from + '"  , "message":"' + addslashes(message) + '" }'
     let old_messages = JSON.parse(localStorage.getItem(chat_partner))
+    console.log('probleme')
+    console.log(text)
+    console.log(JSON.parse(text))
     old_messages.push(JSON.parse(text))
     localStorage.setItem(chat_partner, JSON.stringify(old_messages))
   }
@@ -474,10 +483,10 @@ async function format_message_in_chat(data) {
           p.innerHTML = '<span class=user_name>' + data[item].user + '</span>:<br/> ' + message_tmp
         }
         chat_window.append(p)
+
       }
     }
-    document.getElementsByClassName("room_container")[0].scrollTop = document.getElementsByClassName("room_container")[0].scrollHeight
-
+    chat_window.scrollTop = chat_window.scrollHeight
   } else {
     document.getElementById("chat_history").innerHTML = ''
     let chat_window = document.createElement("div")
@@ -503,8 +512,8 @@ async function format_message_in_chat(data) {
 
         chat_window.append(p)
       }
-      document.getElementsByClassName("user_chat_container")[0].scrollTop = document.getElementsByClassName("user_chat_container")[0].scrollHeight
     }
+    chat_window.scrollTop = chat_window.scrollHeight
   }
 }
 
@@ -527,7 +536,6 @@ function add_li_to_privat_chat(user) {
       ul.appendChild(li)
     }
   }
-
 }
 
 function remove_old_user_list(room) {
@@ -554,9 +562,11 @@ function activate_user_chat_window(chat_partner) {
 
 function check_old_private_chats() {
   // adds existing private chats to the screen
-  for (let i = 0; i < localStorage.length; i++) {
-    storage = JSON.parse(localStorage.getItem(localStorage.key(i)))
-    add_li_to_privat_chat(storage[0].from_user)
+  for (let key of Object.keys(localStorage)) {
+    if (key.length !== undefined) {
+      storage = JSON.parse(localStorage.getItem(key))
+      add_li_to_privat_chat(key)
+    }
   }
 }
 
