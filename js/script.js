@@ -488,6 +488,7 @@ async function format_message_in_chat(data) {
     }
     chat_window.scrollTop = chat_window.scrollHeight
   } else {
+    //todo special char problem when saving json
     document.getElementById("chat_history").innerHTML = ''
     let chat_window = document.createElement("div")
     chat_window.classList.add("user_chat_container")
