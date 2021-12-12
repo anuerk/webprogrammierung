@@ -501,16 +501,17 @@ async function format_message_in_chat(data) {
       for (let i = 0; i < chat_history.length; i++) {
         let p = document.createElement("p")
         p.style.width = msg_width + 'px'
-        message_tmp = chat_history[i].message.split("\n").join("<br />")
-        if (chat_history[i].from_user == current_user) {
-          p.classList.add("from-me")
-          message_tmp = message_tmp.substring(1, message_tmp.length - 1)
-          p.innerHTML = message_tmp
-        } else {
-          p.classList.add("from-them")
-          p.innerHTML = '<span class=user_name>' + chat_history[i].from_user + '</span>:<br/> ' + message_tmp
+        if (chat_history[i].message !== undefined) { //todo escape specail chars
+          message_tmp = chat_history[i].message.split("\n").join("<br />")
+          if (chat_history[i].from_user == current_user) {
+            p.classList.add("from-me")
+            message_tmp = message_tmp.substring(1, message_tmp.length - 1)
+            p.innerHTML = message_tmp
+          } else {
+            p.classList.add("from-them")
+            p.innerHTML = '<span class=user_name>' + chat_history[i].from_user + '</span>:<br/> ' + message_tmp
+          }
         }
-
         chat_window.append(p)
       }
     }
